@@ -17,7 +17,7 @@ User's can install the spcstr binary via package manager (brew, pacman, apt, etc
 brew install spcstr
 ```
 
-Once installed, user can initialize spcstr in a project's root directory by running `spcstr` init. This creates a `.spcstr/` directory in their project and adds the hook commands to the project's claude settings `.claude/settings.json`.
+Once installed, user can initialize spcstr in a project's root directory by running `spcstr init`. This creates a `.spcstr/` directory in their project and adds the hook commands to the project's claude settings `.claude/settings.json`.
 
 
 ### Init Command
@@ -27,15 +27,16 @@ Once installed, user can initialize spcstr in a project's root directory by runn
 spcstr init
 ```
 
-*Once initialized, all claude-code session data will be automatically logged to the project sessions folder: `.spcstr/sessions/{session-id}/state.json`*
+**Init process:**
+1. Create `.spcstr/` directory
+2. Create `.spcstr/{logs,sessions,hooks}` directory
+3. Write hook executibles to `.spcstr/hooks/*`
+4. Add hook settings to `.claude/settings.json`
 
 The session state json file is updated by small executibles in `.spcstr/hooks/*` which are triggered by claude-code hooks.[^1] On *spcstr init* the executibles are added to the project and local claude hook settings are updated.
 
-**Init process:**
-1. Create `.spcstr/` directory
-1. Create `.spcstr/{logs,sessions,hooks}` directory
-2. Write hook executibles to `.spcstr/hooks/*`
-3. Add hook settings to `.claude/settings.json`
+*Once initialized, all claude-code session data will be automatically logged to the project sessions folder: `.spcstr/sessions/{session-id}/state.json`*
+
 
 #### State Management & Hook Executibles
 
@@ -188,5 +189,3 @@ Global user config is located at `~/.spcstr/settings.json`.
 **Footnotes**
 
 [^1]: Claude-code hooks: https://docs.anthropic.com/en/docs/claude-code/hooks
-[^2]: Claude-code SDK: https://docs.anthropic.com/en/docs/claude-code/sdk
-[^3]: Claude-code CLI flags: https://docs.anthropic.com/en/docs/claude-code/cli-reference#cli-flags
