@@ -17,7 +17,7 @@ User's can install the spcstr binary via package manager (brew, pacman, apt, etc
 brew install spcstr
 ```
 
-Once installed, user can initialize spcstr in a project's root directory by running `spcstr init`. This creates a `.spcstr/` directory in their project and adds the hook commands to the project's claude settings `.claude/settings.json`.
+Once installed, user can initialize spcstr in a project's root directory by running `spcstr init`. This creates a `.spcstr/` directory in their project and configures Claude Code to use embedded hook commands via `.claude/settings.json`.
 
 
 ### Init Command
@@ -29,20 +29,19 @@ spcstr init
 
 **Init process:**
 1. Create `.spcstr/` directory
-2. Create `.spcstr/{logs,sessions,hooks}` directory
-3. Write hook executibles to `.spcstr/hooks/*`
-4. Add hook settings to `.claude/settings.json`
+2. Create `.spcstr/{logs,sessions}` directory
+3. Configure hook commands in `.claude/settings.json` to call `spcstr hook <name>`
 
-The session state json file is updated by small executibles in `.spcstr/hooks/*` which are triggered by claude-code hooks.[^1] On *spcstr init* the executibles are added to the project and local claude hook settings are updated.
+The session state json file is updated by embedded hook commands (`spcstr hook <name>`) which are triggered by claude-code hooks.[^1] On *spcstr init* the hook commands are configured in local claude hook settings.
 
 *Once initialized, all claude-code session data will be automatically logged to the project sessions folder: `.spcstr/sessions/{session-id}/state.json`*
 
 
-#### State Management & Hook Executibles
+#### State Management & Hook Commands
 
 A core component of `spcstr` is a state management system that is directly integrated with claude-code lifecycle events, "hooks".
 
-For each hook, there will be a matching executible in the `.spcstr/hooks/*` directory. The source-code for these hooks should be written in the same Go monolith and compiled with the main program at build. They will be written to the project hooks directory on init.
+For each hook, there is a matching subcommand (`spcstr hook <hook_name>`) embedded in the main binary. The source-code for these hooks is written in the same Go monolith and compiled with the main program at build.
 
 The specifications for each hook and the full state management system are documented in `docs/plan/hooks-state-management.md`. **This spec must be followed exactly.**
 
@@ -164,10 +163,10 @@ The dashboard must display this data in organized, human readable tables charts 
 
 ## Architecture
 
-The Spec⭐️ system is comprised of two main components:
+The Spec⭐️ system is comprised of a single binary with two main functions:
 
 - The TUI program that the user directly interacts with
-- The hook executibles that are triggered during claude lifecycle
+- The embedded hook commands that are triggered during claude lifecycle
 
 ### TUI Development Stack: Go
 
