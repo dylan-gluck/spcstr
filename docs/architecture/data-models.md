@@ -1,81 +1,76 @@
 # Data Models
 
-## Session Model
-**Purpose:** Represents a complete Claude Code session from start to finish
+## SessionState Model
+**Purpose:** Represents the complete state of a Claude Code session with integrated tracking
 
 **Key Attributes:**
-- SessionID: string - Unique identifier for the session
-- Status: enum(active, completed, error) - Current session state
-- StartTime: timestamp - When session began
-- EndTime: timestamp - When session completed (nullable)
+- SessionID: string - Unique identifier for the session (format: sess_{uuid})
+- CreatedAt: timestamp - Session creation time
+- UpdatedAt: timestamp - Last state update time
+- Source: enum(startup, resume, clear) - Session initiation source
 - ProjectPath: string - Absolute path to project directory
-- Metadata: map[string]string - Additional session context
+- Status: enum(active, completed, error) - Current session state
+- Agents: []string - Currently active agent names
+- AgentsHistory: []AgentHistoryEntry - Complete agent execution history
+- Files: FileOperations - Categorized file operations (new/edited/read)
+- ToolsUsed: map[string]int - Tool name to usage count mapping
+- Errors: []ErrorEntry - Structured error tracking
+- Modified: bool - Internal dirty flag (not persisted)
 
 **Relationships:**
-- Has many Agents (1-to-many)
-- Has many Tasks (1-to-many)
-- Has many FileOperations (1-to-many)
-- Has many ToolExecutions (1-to-many)
-- Has many Errors (1-to-many)
+- Contains AgentHistoryEntry records (embedded)
+- Contains FileOperations structure (embedded)
+- Contains ErrorEntry records (embedded)
 
-## Agent Model
-**Purpose:** Represents an AI agent participating in the session
+## AgentHistoryEntry Model
+**Purpose:** Tracks complete history of agent executions within a session
 
 **Key Attributes:**
-- AgentID: string - Unique identifier
-- Name: string - Agent display name
-- Type: string - Agent type (e.g., "dev", "architect")
-- Status: enum(idle, active, error) - Current agent state
-- LastActivity: timestamp - Last action timestamp
-- SessionID: string - Parent session reference
+- Name: string - Agent name/identifier
+- StartedAt: timestamp - When agent execution began
+- EndedAt: timestamp - When agent execution completed (nullable for active agents)
 
 **Relationships:**
-- Belongs to Session (many-to-1)
-- Has many Tasks (1-to-many)
+- Embedded within SessionState (many-to-1)
 
-## Task Model
-**Purpose:** Tracks individual tasks within a session
+## FileOperations Model
+**Purpose:** Categorizes all file operations performed during session
 
 **Key Attributes:**
-- TaskID: string - Unique identifier
-- Content: string - Task description
-- Status: enum(pending, in_progress, completed) - Task state
-- CreatedAt: timestamp - Task creation time
-- CompletedAt: timestamp - Task completion time (nullable)
-- AgentID: string - Assigned agent reference
+- New: []string - Absolute paths of created files
+- Edited: []string - Absolute paths of modified files  
+- Read: []string - Absolute paths of files read
 
 **Relationships:**
-- Belongs to Session (many-to-1)
-- Belongs to Agent (many-to-1)
+- Embedded within SessionState (1-to-1)
 
-## FileOperation Model
-**Purpose:** Records file system operations performed during session
+## ErrorEntry Model
+**Purpose:** Structured error tracking with context
 
 **Key Attributes:**
-- OperationID: string - Unique identifier
-- FilePath: string - Absolute file path
-- Operation: enum(created, edited, read, deleted) - Operation type
-- Timestamp: timestamp - When operation occurred
-- SessionID: string - Parent session reference
-- LineCount: int - Number of lines affected (optional)
+- Timestamp: timestamp - When error occurred
+- Hook: string - Hook name where error originated
+- Message: string - Error description
 
 **Relationships:**
-- Belongs to Session (many-to-1)
+- Embedded within SessionState (many-to-1)
 
-## ToolExecution Model
-**Purpose:** Tracks tool/command executions
+## Tool Usage Tracking
+**Purpose:** Maintains count of tool invocations during session
 
-**Key Attributes:**
-- ExecutionID: string - Unique identifier
-- ToolName: string - Name of tool executed
-- Command: string - Full command or parameters
-- Timestamp: timestamp - Execution time
-- Duration: int - Execution duration in milliseconds
-- ExitCode: int - Command exit code (nullable)
-- SessionID: string - Parent session reference
+**Structure:** map[string]int - Tool name mapped to usage count
+
+**Common Tools Tracked:**
+- Read, Write, Edit, MultiEdit - File operations
+- Bash, BashOutput, KillBash - Command execution
+- Task - Agent invocations  
+- Grep, Glob - Search operations
+- WebSearch, WebFetch - Web operations
 
 **Relationships:**
-- Belongs to Session (many-to-1)
+- Embedded within SessionState as ToolsUsed field
+
+
 
 ## PlanDocument Model
 **Purpose:** Represents indexed planning documents (PRD, Architecture, etc.)

@@ -1,32 +1,34 @@
 # Epic 2: Session Tracking & Persistence
 
-Implement the core session tracking functionality with hook scripts that capture Claude Code events. Create the JSON-based persistence layer that maintains session state across restarts. Ensure real-time updates flow from hooks to the TUI.
+Implement the core session tracking functionality with integrated Go hook handlers that capture Claude Code events. Create the atomic JSON-based persistence layer with proper data model that maintains session state across restarts. Ensure real-time updates flow from hooks to the TUI with sub-100ms latency.
 
-## Story 2.1: Hook Script Implementation
+## Story 2.1: Hook Event Processing Implementation
 
 As a developer,
-I want hook scripts that capture all Claude Code events,
-so that session data is automatically tracked.
+I want Go-based hook handlers that process all Claude Code events,
+so that session data is accurately tracked with type safety.
 
 ### Acceptance Criteria
-1: Shell scripts created for all critical Claude hooks
-2: Scripts validate and create session directories as needed
-3: Session ID generation is unique and consistent
-4: Scripts handle errors gracefully without blocking Claude
-5: Minimal performance impact (<10ms per hook execution)
+1: Go handlers implemented for all 9 Claude hooks (pre-tool-use, post-tool-use, etc.)
+2: Handlers validate and create session directories atomically
+3: Session ID generation uses format sess_{uuid} consistently
+4: Handlers never block Claude (exit 0 for success, 2 for blocking)
+5: Performance validated at <10ms per hook execution
+6: Safety checks implemented for dangerous operations (rm -rf, .env access)
 
 ## Story 2.2: Session State Management
 
 As a system,
-I want to maintain session state in structured JSON,
-so that sessions can be persisted and recovered.
+I want to maintain session state with proper data model in structured JSON,
+so that sessions can be persisted and recovered accurately.
 
 ### Acceptance Criteria
-1: Session JSON schema includes all required fields
-2: State updates are atomic to prevent corruption
-3: Concurrent modifications are handled safely
-4: Session files are human-readable and editable
-5: Old sessions are archived after configurable duration
+1: Session state includes: agents, agents_history, categorized files (new/edited/read), tools_used map, errors array
+2: State updates use atomic writes (temp file + rename)
+3: File-based locking prevents concurrent corruption
+4: Session files remain human-readable JSON
+5: Modified flag tracks dirty state without persistence
+6: AgentHistoryEntry tracks start/end times for all agents
 
 ## Story 2.3: Real-time Data Pipeline
 
@@ -48,8 +50,8 @@ I want to see all files that were created, edited, or read in a session,
 so that I understand the scope of changes.
 
 ### Acceptance Criteria
-1: File operations are categorized correctly (new/edited/read)
-2: Full absolute paths are captured for all files
-3: Duplicate entries are prevented within categories
-4: File lists are sorted alphabetically for readability
-5: Relative paths can be displayed optionally
+1: File operations categorized into FileOperations struct (new/edited/read arrays)
+2: Full absolute paths captured from tool usage
+3: Duplicate entries prevented within each category
+4: Tool usage counts maintained in tools_used map
+5: Error tracking with timestamp, hook name, and message

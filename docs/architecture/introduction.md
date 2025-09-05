@@ -19,3 +19,4 @@ No existing codebase or starter template is being used - this will be built from
 | Date | Version | Description | Author |
 |------|---------|-------------|--------|
 | 2025-09-05 | 1.0 | Initial architecture document | BMad Master |
+| 2025-09-05 | 2.0 | Updated to integrated Go hook system | Winston |

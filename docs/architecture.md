@@ -21,6 +21,7 @@ No existing codebase or starter template is being used - this will be built from
 | Date | Version | Description | Author |
 |------|---------|-------------|--------|
 | 2025-09-05 | 1.0 | Initial architecture document | BMad Master |
+| 2025-09-05 | 2.0 | Updated to integrated Go hook system | Winston |
 
 ## High Level Architecture
 
@@ -33,7 +34,7 @@ Spec⭐️ is a monolithic Go application utilizing an event-driven architecture
 1. **Architectural Style:** Event-Driven Monolith with modular package structure
 2. **Repository Structure:** Monorepo containing all Go packages, hook scripts, and configurations (as specified in PRD)
 3. **Service Architecture:** Single monolithic Go binary with internal modular packages for separation of concerns
-4. **Primary Flow:** Claude Code hooks → Shell scripts → File system events → Go watchers → Channel-based updates → TUI rendering
+4. **Primary Flow:** Claude Code hooks → Go hook command → Atomic file updates → File system events → Go watchers → Channel-based updates → TUI rendering
 5. **Key Decisions:**
    - File-based persistence over database for simplicity and portability
    - Event-driven internal architecture for real-time responsiveness
@@ -56,10 +57,10 @@ graph TB
             RUN[Run Command]
         end
         
-        subgraph "Hook Scripts"
-            HS[Shell Scripts]
-            VALIDATE[Validation]
-            WRITER[JSON Writer]
+        subgraph "Hook System"
+            HC[Hook Command]
+            VALIDATE[Input Validation]
+            ATOMIC[Atomic State Writer]
         end
         
         subgraph "Core Engine"
@@ -84,8 +85,8 @@ graph TB
     end
     
     CC -->|triggers| HOOKS
-    HOOKS -->|execute| HS
-    HS -->|write| SESSIONS
+    HOOKS -->|execute| HC
+    HC -->|atomic write| SESSIONS
     WATCHER -->|monitor| SESSIONS
     WATCHER -->|emit| EVENTS
     EVENTS -->|update| STATE
@@ -126,7 +127,7 @@ This is the **DEFINITIVE** technology selection section. These choices will be r
 | **TUI Components** | Bubbles | 0.17.1 | UI components for Bubbletea | Official component library for Bubbletea |
 | **TUI Styling** | Lipgloss | 0.9.1 | Terminal styling | Official styling library for Bubbletea |
 | **Markdown** | Glamour | 0.6.0 | Markdown rendering in terminal | Integrates with Bubbletea ecosystem |
-| **Shell Scripts** | POSIX sh | N/A | Hook scripts | Maximum compatibility as required |
+| **Hook System** | Go (integrated) | 1.21.0 | Claude Code hooks | Native Go performance, type safety |
 | **File Watching** | fsnotify | 1.7.0 | File system events | Production-proven, cross-platform |
 | **Testing** | Go testing | stdlib | Unit tests | Standard Go testing package |
 | **Testing Mock** | testify | 1.8.4 | Test assertions and mocks | Most popular Go testing toolkit |
@@ -139,82 +140,77 @@ This is the **DEFINITIVE** technology selection section. These choices will be r
 
 ## Data Models
 
-### Session Model
-**Purpose:** Represents a complete Claude Code session from start to finish
+### SessionState Model
+**Purpose:** Represents the complete state of a Claude Code session with integrated tracking
 
 **Key Attributes:**
-- SessionID: string - Unique identifier for the session
-- Status: enum(active, completed, error) - Current session state
-- StartTime: timestamp - When session began
-- EndTime: timestamp - When session completed (nullable)
+- SessionID: string - Unique identifier for the session (format: sess_{uuid})
+- CreatedAt: timestamp - Session creation time
+- UpdatedAt: timestamp - Last state update time
+- Source: enum(startup, resume, clear) - Session initiation source
 - ProjectPath: string - Absolute path to project directory
-- Metadata: map[string]string - Additional session context
+- Status: enum(active, completed, error) - Current session state
+- Agents: []string - Currently active agent names
+- AgentsHistory: []AgentHistoryEntry - Complete agent execution history
+- Files: FileOperations - Categorized file operations (new/edited/read)
+- ToolsUsed: map[string]int - Tool name to usage count mapping
+- Errors: []ErrorEntry - Structured error tracking
+- Modified: bool - Internal dirty flag (not persisted)
 
 **Relationships:**
-- Has many Agents (1-to-many)
-- Has many Tasks (1-to-many)
-- Has many FileOperations (1-to-many)
-- Has many ToolExecutions (1-to-many)
-- Has many Errors (1-to-many)
+- Contains AgentHistoryEntry records (embedded)
+- Contains FileOperations structure (embedded)
+- Contains ErrorEntry records (embedded)
 
-### Agent Model
-**Purpose:** Represents an AI agent participating in the session
+### AgentHistoryEntry Model
+**Purpose:** Tracks complete history of agent executions within a session
 
 **Key Attributes:**
-- AgentID: string - Unique identifier
-- Name: string - Agent display name
-- Type: string - Agent type (e.g., "dev", "architect")
-- Status: enum(idle, active, error) - Current agent state
-- LastActivity: timestamp - Last action timestamp
-- SessionID: string - Parent session reference
+- Name: string - Agent name/identifier
+- StartedAt: timestamp - When agent execution began
+- EndedAt: timestamp - When agent execution completed (nullable for active agents)
 
 **Relationships:**
-- Belongs to Session (many-to-1)
-- Has many Tasks (1-to-many)
+- Embedded within SessionState (many-to-1)
 
-### Task Model
-**Purpose:** Tracks individual tasks within a session
+### FileOperations Model
+**Purpose:** Categorizes all file operations performed during session
 
 **Key Attributes:**
-- TaskID: string - Unique identifier
-- Content: string - Task description
-- Status: enum(pending, in_progress, completed) - Task state
-- CreatedAt: timestamp - Task creation time
-- CompletedAt: timestamp - Task completion time (nullable)
-- AgentID: string - Assigned agent reference
+- New: []string - Absolute paths of created files
+- Edited: []string - Absolute paths of modified files  
+- Read: []string - Absolute paths of files read
 
 **Relationships:**
-- Belongs to Session (many-to-1)
-- Belongs to Agent (many-to-1)
+- Embedded within SessionState (1-to-1)
 
-### FileOperation Model
-**Purpose:** Records file system operations performed during session
+### ErrorEntry Model
+**Purpose:** Structured error tracking with context
 
 **Key Attributes:**
-- OperationID: string - Unique identifier
-- FilePath: string - Absolute file path
-- Operation: enum(created, edited, read, deleted) - Operation type
-- Timestamp: timestamp - When operation occurred
-- SessionID: string - Parent session reference
-- LineCount: int - Number of lines affected (optional)
+- Timestamp: timestamp - When error occurred
+- Hook: string - Hook name where error originated
+- Message: string - Error description
 
 **Relationships:**
-- Belongs to Session (many-to-1)
+- Embedded within SessionState (many-to-1)
 
-### ToolExecution Model
-**Purpose:** Tracks tool/command executions
+### Tool Usage Tracking
+**Purpose:** Maintains count of tool invocations during session
 
-**Key Attributes:**
-- ExecutionID: string - Unique identifier
-- ToolName: string - Name of tool executed
-- Command: string - Full command or parameters
-- Timestamp: timestamp - Execution time
-- Duration: int - Execution duration in milliseconds
-- ExitCode: int - Command exit code (nullable)
-- SessionID: string - Parent session reference
+**Structure:** map[string]int - Tool name mapped to usage count
+
+**Common Tools Tracked:**
+- Read, Write, Edit, MultiEdit - File operations
+- Bash, BashOutput, KillBash - Command execution
+- Task - Agent invocations  
+- Grep, Glob - Search operations
+- WebSearch, WebFetch - Web operations
 
 **Relationships:**
-- Belongs to Session (many-to-1)
+- Embedded within SessionState as ToolsUsed field
+
+
 
 ### PlanDocument Model
 **Purpose:** Represents indexed planning documents (PRD, Architecture, etc.)
@@ -262,16 +258,18 @@ This is the **DEFINITIVE** technology selection section. These choices will be r
 **Technology Stack:** Cobra 1.8.0 for CLI structure, Go 1.21.0
 
 ### Hook Manager Component
-**Responsibility:** Generate, validate, and install Claude Code hook scripts
+**Responsibility:** Handle Claude Code hook events with integrated Go command processing
 
 **Key Interfaces:**
-- GenerateHooks() - Create POSIX-compliant shell scripts
-- InstallHooks() - Write hooks to .spcstr/hooks/
-- UpdateClaudeSettings() - Modify Claude's settings.json
+- HandleHook(hookName, stdin) - Process hook events from Claude Code
+- LoadSessionState() - Load current session state atomically
+- SaveSessionState() - Persist state with atomic file operations
+- ValidateToolUsage() - Implement safety checks for dangerous operations
+- UpdateClaudeSettings() - Configure Claude's settings.json for Go hooks
 
-**Dependencies:** Config Manager, File System utilities
+**Dependencies:** Session Manager, Persistence Layer, Config Manager
 
-**Technology Stack:** Go templates for script generation, encoding/json for settings
+**Technology Stack:** Native Go 1.21.0, encoding/json, atomic file operations via temp+rename
 
 ### Session Manager Component
 **Responsibility:** Manage session lifecycle and state persistence
@@ -457,37 +455,47 @@ This design aligns with the PRD's goals of creating a single-binary tool with no
 ```mermaid
 sequenceDiagram
     participant CC as Claude Code
-    participant HS as Hook Script
+    participant HC as Hook Command
+    participant HM as Hook Manager
     participant FS as File System
     participant FW as File Watcher
     participant EB as Event Bus
     participant SM as Session Manager
     participant TUI as TUI Display
     
-    CC->>HS: Trigger session start hook
-    HS->>HS: Generate session ID
-    HS->>HS: Validate paths
-    HS->>FS: Create session.json
+    CC->>HC: spcstr hook session-start
+    HC->>HM: HandleHook("session-start")
+    HM->>HM: Initialize SessionState
+    HM->>HM: Generate session ID
+    HM->>FS: Atomic write state.json
     FS-->>FW: File created event
     FW->>EB: Publish NewSession event
     EB->>SM: Handle NewSession
-    SM->>SM: Load session data
+    SM->>SM: Load session state
     SM->>EB: Publish SessionUpdated
     EB->>TUI: Update session list
     TUI->>TUI: Render new session
     
     loop During Session
-        CC->>HS: Trigger tool/file hooks
-        HS->>FS: Update session.json
+        CC->>HC: spcstr hook pre-tool-use
+        HC->>HM: Validate tool usage
+        HM->>HM: Safety checks
+        HM-->>CC: Exit code (0 or 2)
+        
+        CC->>HC: spcstr hook post-tool-use
+        HC->>HM: Update ToolsUsed count
+        HM->>HM: Categorize file operations
+        HM->>FS: Atomic update state.json
         FS-->>FW: File modified event
         FW->>EB: Publish SessionModified
         EB->>SM: Update in-memory state
         SM->>EB: Publish updates
-        EB->>TUI: Real-time updates
+        EB->>TUI: Real-time updates (<10ms)
     end
     
-    CC->>HS: Trigger session end hook
-    HS->>FS: Finalize session.json
+    CC->>HC: spcstr hook session-end
+    HC->>HM: Finalize session
+    HM->>FS: Atomic write final state
     FW->>EB: Publish SessionCompleted
     EB->>SM: Mark session complete
     EB->>TUI: Update status
@@ -547,23 +555,23 @@ sequenceDiagram
     participant OV as Observe View
     participant DR as Dashboard Renderer
     
-    HS->>FS: Update task status
+    HC->>FS: Update tool usage count
     FW->>EB: FileModified event
     EB->>SM: UpdateSession()
-    SM->>SM: Parse changes
-    SM->>EB: TaskUpdated event
+    SM->>SM: Parse state changes
+    SM->>EB: ToolUsageUpdated event
     
-    EB->>OV: HandleTaskUpdate()
-    OV->>DR: UpdateTaskSection()
-    DR->>DR: Calculate progress
+    EB->>OV: HandleToolUpdate()
+    OV->>DR: UpdateToolsSection()
+    DR->>DR: Calculate metrics
     DR->>DR: Format display
     DR->>OV: Rendered section
     OV->>OV: Merge updates
     OV->>OV: TUI refresh
     
-    Note over OV: Sub-100ms update cycle
+    Note over OV: <10ms update cycle
     
-    HS->>FS: Add error entry
+    HC->>FS: Add error entry
     FW->>EB: FileModified event
     EB->>SM: UpdateSession()
     SM->>EB: ErrorAdded event
@@ -659,137 +667,120 @@ The application follows a different architectural pattern:
 
 Since Spec⭐️ uses **file-based JSON persistence** rather than a traditional database, here are the JSON schemas for our data structures:
 
-### Session Schema (`.spcstr/sessions/{session-id}.json`)
+### Session State Schema (`.spcstr/sessions/{session_id}/state.json`)
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["sessionID", "status", "startTime", "projectPath"],
+  "required": ["session_id", "created_at", "updated_at", "source", "project_path", "status"],
   "properties": {
-    "sessionID": {
+    "session_id": {
       "type": "string",
-      "pattern": "^[a-zA-Z0-9-]+$"
+      "pattern": "^sess_[a-zA-Z0-9-]+$",
+      "description": "Unique session identifier with sess_ prefix"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of session creation"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of last update"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["startup", "resume", "clear"],
+      "description": "How the session was initiated"
+    },
+    "project_path": {
+      "type": "string",
+      "description": "Absolute path to project directory"
     },
     "status": {
       "type": "string",
-      "enum": ["active", "completed", "error"]
-    },
-    "startTime": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "endTime": {
-      "type": ["string", "null"],
-      "format": "date-time"
-    },
-    "projectPath": {
-      "type": "string"
-    },
-    "metadata": {
-      "type": "object",
-      "additionalProperties": {"type": "string"}
+      "enum": ["active", "completed", "error"],
+      "description": "Current session state"
     },
     "agents": {
       "type": "array",
+      "items": {"type": "string"},
+      "description": "Currently active agent names"
+    },
+    "agents_history": {
+      "type": "array",
       "items": {
         "type": "object",
-        "required": ["agentID", "name", "type", "status"],
+        "required": ["name", "started_at"],
         "properties": {
-          "agentID": {"type": "string"},
-          "name": {"type": "string"},
-          "type": {"type": "string"},
-          "status": {
+          "name": {
             "type": "string",
-            "enum": ["idle", "active", "error"]
+            "description": "Agent name/identifier"
           },
-          "lastActivity": {
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ended_at": {
             "type": "string",
             "format": "date-time"
           }
         }
-      }
+      },
+      "description": "Complete history of all agents that have run"
     },
-    "tasks": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["taskID", "content", "status", "createdAt"],
-        "properties": {
-          "taskID": {"type": "string"},
-          "content": {"type": "string"},
-          "status": {
-            "type": "string",
-            "enum": ["pending", "in_progress", "completed"]
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "completedAt": {
-            "type": ["string", "null"],
-            "format": "date-time"
-          },
-          "agentID": {"type": "string"}
+    "files": {
+      "type": "object",
+      "required": ["new", "edited", "read"],
+      "properties": {
+        "new": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Absolute paths of created files"
+        },
+        "edited": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Absolute paths of modified files"
+        },
+        "read": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Absolute paths of read files"
         }
-      }
+      },
+      "description": "Categorized file operations"
     },
-    "fileOperations": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["operationID", "filePath", "operation", "timestamp"],
-        "properties": {
-          "operationID": {"type": "string"},
-          "filePath": {"type": "string"},
-          "operation": {
-            "type": "string",
-            "enum": ["created", "edited", "read", "deleted"]
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "lineCount": {"type": "integer"}
-        }
-      }
-    },
-    "toolExecutions": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["executionID", "toolName", "timestamp"],
-        "properties": {
-          "executionID": {"type": "string"},
-          "toolName": {"type": "string"},
-          "command": {"type": "string"},
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "duration": {"type": "integer"},
-          "exitCode": {"type": ["integer", "null"]}
-        }
-      }
+    "tools_used": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "description": "Map of tool names to usage counts"
     },
     "errors": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["errorID", "message", "timestamp"],
+        "required": ["timestamp", "hook", "message"],
         "properties": {
-          "errorID": {"type": "string"},
-          "message": {"type": "string"},
           "timestamp": {
             "type": "string",
             "format": "date-time"
           },
-          "severity": {
+          "hook": {
             "type": "string",
-            "enum": ["warning", "error", "fatal"]
+            "description": "Hook name where error occurred"
           },
-          "context": {"type": "object"}
+          "message": {
+            "type": "string",
+            "description": "Error description"
+          }
         }
-      }
+      },
+      "description": "Structured error tracking"
     }
   }
 }
@@ -904,38 +895,33 @@ Since Spec⭐️ uses **file-based JSON persistence** rather than a traditional 
 .spcstr/
 ├── config.json                 # Project configuration
 ├── sessions/                   # Session data directory
-│   ├── active/                 # Active sessions
-│   │   └── {session-id}.json
-│   └── archive/                # Completed sessions
-│       └── 2025-01-05/
-│           └── {session-id}.json
-├── hooks/                      # Generated hook scripts
-│   ├── pre-command.sh
-│   ├── post-command.sh
-│   ├── file-modified.sh
-│   └── session-end.sh
+│   └── {session_id}/           # Per-session directory
+│       ├── state.json          # Primary session state
+│       ├── messages.json       # Message history (optional)
+│       └── .lock              # Lock file for atomic operations
 ├── cache/                      # Application cache
 │   └── document-index.json
 └── logs/                       # Debug logs
-    └── debug.log
+    ├── debug.log
+    └── hook-errors.log         # Hook-specific errors
 ```
 
 ### Index Strategies
 
 Since we're using file-based storage, we implement indexing through:
 
-1. **Session Index**: Directory listing with file naming convention for quick access
+1. **Session Index**: Directory-based organization with one directory per session
 2. **Document Index**: Cached JSON file with pre-computed search terms
-3. **Active Sessions**: Separate directory for O(1) active session queries
-4. **Date-based Archive**: Directory structure for efficient historical queries
+3. **Session State Files**: Atomic state.json per session for consistency
+4. **Lock Files**: .lock files for concurrent access control
 
 ### Performance Considerations
 
-- **Write Performance**: Atomic writes using temp file + rename
-- **Read Performance**: Memory-mapped files for large sessions
-- **Concurrency**: File locking for write operations
-- **Caching**: In-memory cache with fsnotify invalidation
-- **Compression**: Optional gzip for archived sessions
+- **Write Performance**: Atomic writes using temp file + rename (POSIX atomic)
+- **Read Performance**: Direct JSON parsing with <10ms target
+- **Concurrency**: File-based locking with exponential backoff (max 100ms wait)
+- **Caching**: In-memory state cache with fsnotify invalidation
+- **Hook Performance**: <10ms execution requirement, <2ms overhead target
 
 ## Source Tree
 
@@ -943,7 +929,8 @@ Since we're using file-based storage, we implement indexing through:
 spcstr/
 ├── cmd/
 │   └── spcstr/
-│       └── main.go                 # Application entry point
+│       ├── main.go                 # Application entry point
+│       └── hook.go                 # Hook subcommand entry
 ├── internal/
 │   ├── cli/
 │   │   ├── root.go                 # Root command setup
@@ -957,10 +944,21 @@ spcstr/
 │   │   ├── validator.go            # Config validation
 │   │   └── xdg.go                  # XDG directory handling
 │   ├── hooks/
-│   │   ├── generator.go            # Hook script generation
-│   │   ├── installer.go            # Hook installation logic
-│   │   ├── templates.go            # Shell script templates
-│   │   └── claude.go               # Claude settings updater
+│   │   ├── handler.go              # Main hook event dispatcher
+│   │   ├── state.go                # Session state management
+│   │   ├── types.go                # Hook data structures
+│   │   ├── persistence.go          # Atomic file I/O operations
+│   │   ├── claude.go               # Claude settings updater
+│   │   └── handlers/               # Individual hook handlers
+│   │       ├── pre_tool_use.go    # Pre-tool safety checks
+│   │       ├── post_tool_use.go   # Tool tracking & file ops
+│   │       ├── session_start.go   # Session initialization
+│   │       ├── session_end.go     # Session finalization
+│   │       ├── user_prompt.go     # Prompt filtering
+│   │       ├── notification.go    # Notification logging
+│   │       ├── stop.go            # Stop handling
+│   │       ├── subagent_stop.go   # Agent tracking
+│   │       └── pre_compact.go     # Compaction prep
 │   ├── session/
 │   │   ├── session.go              # Session data structures
 │   │   ├── manager.go              # Session lifecycle management
@@ -1008,16 +1006,15 @@ spcstr/
 │       ├── filepath.go             # Path manipulation
 │       └── terminal.go             # Terminal utilities
 ├── pkg/
-│   └── models/
-│       ├── session.go              # Public session types
-│       ├── agent.go                # Agent model
-│       ├── task.go                 # Task model
-│       ├── file.go                 # File operation model
-│       └── document.go             # Document model
+│   ├── models/
+│   │   ├── session.go              # Public session types
+│   │   └── document.go             # Document model
+│   └── hooks/
+│       ├── session_state.go        # SessionState structure
+│       ├── file_operations.go      # FileOperations model
+│       ├── agent_history.go        # AgentHistoryEntry model
+│       └── error_entry.go          # ErrorEntry model
 ├── scripts/
-│   ├── hooks/
-│   │   ├── template.sh.tmpl        # Hook script template
-│   │   └── common.sh               # Shared hook functions
 │   ├── install.sh                  # Installation script
 │   └── release.sh                  # Release build script
 ├── test/
@@ -1038,8 +1035,7 @@ spcstr/
 │   └── api/                        # Generated API documentation
 ├── .spcstr/                         # Default project config location
 │   ├── config.json                 # Project configuration
-│   ├── sessions/                   # Session data
-│   ├── hooks/                      # Generated hooks
+│   ├── sessions/                   # Session data directories
 │   └── cache/                      # Application cache
 ├── go.mod                           # Go module definition
 ├── go.sum                           # Dependency checksums
@@ -1217,10 +1213,14 @@ make sign        # Sign binaries for macOS
 **Critical Requirement:** Hook scripts must NEVER block Claude Code
 
 ```bash
-# Error handling in hook scripts
-set +e  # Don't exit on error
-operation || echo "Error: $?" >> .spcstr/logs/hook-errors.log
-exit 0  # Always exit successfully
+// Error handling in Go hooks
+func (h *HookHandler) Execute() error {
+    // Operations that may fail are logged but don't block
+    if err := h.updateState(); err != nil {
+        h.logError(err) // Log but continue
+    }
+    return nil // Always succeed to not block Claude
+}
 ```
 
 ### TUI Error Display
@@ -1276,7 +1276,8 @@ exit 0  # Always exit successfully
 
 - **Never use fmt.Print/Println in production code - use log/slog:** All output must go through structured logging
 - **All file operations must use atomic writes (temp + rename):** Prevents data corruption on crash
-- **Hook scripts must always exit 0:** Never block Claude Code operations
+- **Hook commands must complete within 10ms:** Never block Claude Code operations
+- **Hook exit codes: 0 for success, 2 for blocking:** Enables safety checks for dangerous operations
 - **All errors must be wrapped with context using %w:** Enables proper error tracing
 - **Session IDs must use format sess_{uuid}:** Consistent identification across system
 - **Never panic in library code - return errors:** Only main() can panic on fatal errors
@@ -1480,21 +1481,14 @@ func BenchmarkSessionManager_LoadSession(b *testing.B) {
 - **Environment Variables:** Clear sensitive vars before execution
 - **Script Permissions:** Hook scripts created with 0755 permissions
 
-Example safe hook script:
+Example hook invocation:
 ```bash
-#!/bin/sh
-set -euo pipefail
-SESSION_ID="$1"  # Always quoted
-PROJECT_PATH="$2"  # Always quoted
+# Claude settings.json configuration
+"PreToolUse": "spcstr hook pre-tool-use --cwd=$CLAUDE_PROJECT_DIR"
 
-# Validate inputs
-if [ -z "${SESSION_ID}" ] || [ -z "${PROJECT_PATH}" ]; then
-    exit 0  # Silent failure
-fi
-
-# Safe file write
-printf '{"sessionId":"%s","path":"%s"}\n' \
-    "${SESSION_ID}" "${PROJECT_PATH}" >> ".spcstr/sessions/${SESSION_ID}.json"
+# Hook receives JSON on stdin, returns exit code:
+# 0 = success, continue
+# 2 = blocking operation detected
 ```
 
 ### Terminal Security

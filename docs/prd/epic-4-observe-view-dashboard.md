@@ -22,11 +22,12 @@ I want a comprehensive dashboard showing session details,
 so that I understand what's happening in each session.
 
 ### Acceptance Criteria
-1: Dashboard sections for agents, tasks, files, tools
-2: Agents show with current status and activity
-3: Task progress displays as todo/in-progress/done
-4: Tool usage shows with execution counts
-5: Layout adjusts to terminal size intelligently
+1: Dashboard sections for agents, agents_history, files, tools, errors
+2: Agents show current active agents and complete agent history with timestamps
+3: Files displayed in categories: new, edited, read
+4: Tool usage shows as map with tool name and execution count
+5: Errors section displays timestamp, hook name, and message
+6: Layout adjusts to terminal size intelligently
 
 ## Story 4.3: Real-time Dashboard Updates
 

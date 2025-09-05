@@ -18,7 +18,8 @@ Comprehensive unit tests for core logic, integration tests for file operations a
 - Leverage Bubbletea for TUI framework with proven stability
 - Implement Cobra for CLI command structure and help generation
 - Use standard library JSON package for session state serialization
-- Shell scripts must be POSIX-compliant for maximum compatibility
+- Integrated Go-based hook system via `spcstr hook` command for <10ms execution
+- Atomic file operations using temp file + rename pattern for data integrity
 - Avoid CGO dependencies to ensure easy cross-compilation
 - Configuration follows XDG Base Directory specification
 - Support for both project-local and global configuration

@@ -22,7 +22,8 @@
 
 - **Never use fmt.Print/Println in production code - use log/slog:** All output must go through structured logging
 - **All file operations must use atomic writes (temp + rename):** Prevents data corruption on crash
-- **Hook scripts must always exit 0:** Never block Claude Code operations
+- **Hook commands must complete within 10ms:** Never block Claude Code operations
+- **Hook exit codes: 0 for success, 2 for blocking:** Enables safety checks for dangerous operations
 - **All errors must be wrapped with context using %w:** Enables proper error tracing
 - **Session IDs must use format sess_{uuid}:** Consistent identification across system
 - **Never panic in library code - return errors:** Only main() can panic on fatal errors

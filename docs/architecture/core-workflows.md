@@ -4,37 +4,47 @@
 ```mermaid
 sequenceDiagram
     participant CC as Claude Code
-    participant HS as Hook Script
+    participant HC as Hook Command
+    participant HM as Hook Manager
     participant FS as File System
     participant FW as File Watcher
     participant EB as Event Bus
     participant SM as Session Manager
     participant TUI as TUI Display
     
-    CC->>HS: Trigger session start hook
-    HS->>HS: Generate session ID
-    HS->>HS: Validate paths
-    HS->>FS: Create session.json
+    CC->>HC: spcstr hook session-start
+    HC->>HM: HandleHook("session-start")
+    HM->>HM: Initialize SessionState
+    HM->>HM: Generate session ID
+    HM->>FS: Atomic write state.json
     FS-->>FW: File created event
     FW->>EB: Publish NewSession event
     EB->>SM: Handle NewSession
-    SM->>SM: Load session data
+    SM->>SM: Load session state
     SM->>EB: Publish SessionUpdated
     EB->>TUI: Update session list
     TUI->>TUI: Render new session
     
     loop During Session
-        CC->>HS: Trigger tool/file hooks
-        HS->>FS: Update session.json
+        CC->>HC: spcstr hook pre-tool-use
+        HC->>HM: Validate tool usage
+        HM->>HM: Safety checks
+        HM-->>CC: Exit code (0 or 2)
+        
+        CC->>HC: spcstr hook post-tool-use
+        HC->>HM: Update ToolsUsed count
+        HM->>HM: Categorize file operations
+        HM->>FS: Atomic update state.json
         FS-->>FW: File modified event
         FW->>EB: Publish SessionModified
         EB->>SM: Update in-memory state
         SM->>EB: Publish updates
-        EB->>TUI: Real-time updates
+        EB->>TUI: Real-time updates (<10ms)
     end
     
-    CC->>HS: Trigger session end hook
-    HS->>FS: Finalize session.json
+    CC->>HC: spcstr hook session-end
+    HC->>HM: Finalize session
+    HM->>FS: Atomic write final state
     FW->>EB: Publish SessionCompleted
     EB->>SM: Mark session complete
     EB->>TUI: Update status
@@ -94,23 +104,23 @@ sequenceDiagram
     participant OV as Observe View
     participant DR as Dashboard Renderer
     
-    HS->>FS: Update task status
+    HC->>FS: Update tool usage count
     FW->>EB: FileModified event
     EB->>SM: UpdateSession()
-    SM->>SM: Parse changes
-    SM->>EB: TaskUpdated event
+    SM->>SM: Parse state changes
+    SM->>EB: ToolUsageUpdated event
     
-    EB->>OV: HandleTaskUpdate()
-    OV->>DR: UpdateTaskSection()
-    DR->>DR: Calculate progress
+    EB->>OV: HandleToolUpdate()
+    OV->>DR: UpdateToolsSection()
+    DR->>DR: Calculate metrics
     DR->>DR: Format display
     DR->>OV: Rendered section
     OV->>OV: Merge updates
     OV->>OV: TUI refresh
     
-    Note over OV: Sub-100ms update cycle
+    Note over OV: <10ms update cycle
     
-    HS->>FS: Add error entry
+    HC->>FS: Add error entry
     FW->>EB: FileModified event
     EB->>SM: UpdateSession()
     SM->>EB: ErrorAdded event

@@ -24,11 +24,27 @@ so that all necessary hooks and configuration are automatically set up.
 ### Acceptance Criteria
 1: `spcstr init` creates .spcstr/ directory structure
 2: Hook scripts are written to .spcstr/hooks/ directory
-3: Project's .claude/settings.json is created/updated with hook configurations
+3: Claude settings.json is updated with hook configurations
 4: Command detects existing configuration and prompts before overwriting
 5: Success message confirms initialization with next steps
 
-## Story 1.3: Basic TUI Shell with View Management
+## Story 1.3: Go Hook System Implementation
+
+As a developer,
+I want an integrated Go-based hook system,
+so that Claude Code events are processed with type safety and performance.
+
+### Acceptance Criteria
+1: `spcstr hook <hook-name>` command processes all Claude hook events
+2: Hook execution completes within 10ms including file I/O
+3: Session state uses proper data model with categorized file operations
+4: Atomic writes prevent data corruption during concurrent operations
+5: Claude settings.json updated to use Go hook commands
+6: Existing shell hooks from Story 1.2 are detected and migrated
+7: Tool usage tracking with accurate counts per tool type
+8: Agent history maintained with timestamps for all executions
+
+## Story 1.4: Basic TUI Shell with View Management
 
 As a user,
 I want a responsive TUI with keyboard navigation between views,
@@ -41,7 +57,7 @@ so that I can switch between planning and observability modes.
 4: Terminal resize events are handled gracefully
 5: Help text shows available keybindings
 
-## Story 1.4: Configuration Management
+## Story 1.5: Configuration Management
 
 As a user,
 I want spcstr to respect both project and global configuration,

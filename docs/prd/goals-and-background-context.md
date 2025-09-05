@@ -21,3 +21,4 @@ The solution leverages Claude Code's hook system to automatically capture sessio
 | Date | Version | Description | Author |
 |------|---------|-------------|--------|
 | 2025-09-05 | 1.0 | Initial PRD creation | BMad Master |
+| 2025-09-05 | 1.1 | Updated for Go-based hook system migration | Mary (Analyst) |

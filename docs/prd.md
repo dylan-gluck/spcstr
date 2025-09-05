@@ -23,6 +23,7 @@ The solution leverages Claude Code's hook system to automatically capture sessio
 | Date | Version | Description | Author |
 |------|---------|-------------|--------|
 | 2025-09-05 | 1.0 | Initial PRD creation | BMad Master |
+| 2025-09-05 | 1.1 | Updated for Go-based hook system migration | Mary (Analyst) |
 
 ## Requirements
 
@@ -114,7 +115,8 @@ Comprehensive unit tests for core logic, integration tests for file operations a
 - Leverage Bubbletea for TUI framework with proven stability
 - Implement Cobra for CLI command structure and help generation
 - Use standard library JSON package for session state serialization
-- Shell scripts must be POSIX-compliant for maximum compatibility
+- Integrated Go-based hook system via `spcstr hook` command for <10ms execution
+- Atomic file operations using temp file + rename pattern for data integrity
 - Avoid CGO dependencies to ensure easy cross-compilation
 - Configuration follows XDG Base Directory specification
 - Support for both project-local and global configuration
@@ -122,7 +124,7 @@ Comprehensive unit tests for core logic, integration tests for file operations a
 ## Epic List
 
 - **Epic 1: Foundation & Core Infrastructure**: Establish project structure, implement init command, and create basic TUI shell with view switching
-- **Epic 2: Session Tracking & Persistence**: Implement hook scripts, session state management, and JSON persistence layer
+- **Epic 2: Session Tracking & Persistence**: Implement Go-based hook handlers, session state management with proper data model, and atomic JSON persistence layer
 - **Epic 3: Plan View Implementation**: Build document indexing, markdown preview, and navigation features for planning documents
 - **Epic 4: Observe View & Dashboard**: Create session list, implement dashboard layout, and enable real-time session monitoring
 
@@ -156,7 +158,23 @@ so that all necessary hooks and configuration are automatically set up.
 4: Command detects existing configuration and prompts before overwriting
 5: Success message confirms initialization with next steps
 
-### Story 1.3: Basic TUI Shell with View Management
+### Story 1.3: Go Hook System Implementation
+
+As a developer,
+I want an integrated Go-based hook system,
+so that Claude Code events are processed with type safety and performance.
+
+#### Acceptance Criteria
+1: `spcstr hook <hook-name>` command processes all Claude hook events
+2: Hook execution completes within 10ms including file I/O
+3: Session state uses proper data model with categorized file operations
+4: Atomic writes prevent data corruption during concurrent operations
+5: Claude settings.json updated to use Go hook commands
+6: Existing shell hooks from Story 1.2 are detected and migrated
+7: Tool usage tracking with accurate counts per tool type
+8: Agent history maintained with timestamps for all executions
+
+### Story 1.4: Basic TUI Shell with View Management
 
 As a user,
 I want a responsive TUI with keyboard navigation between views,
@@ -169,7 +187,7 @@ so that I can switch between planning and observability modes.
 4: Terminal resize events are handled gracefully
 5: Help text shows available keybindings
 
-### Story 1.4: Configuration Management
+### Story 1.5: Configuration Management
 
 As a user,
 I want spcstr to respect both project and global configuration,
@@ -184,33 +202,35 @@ so that I can customize behavior per project or globally.
 
 ## Epic 2: Session Tracking & Persistence
 
-Implement the core session tracking functionality with hook scripts that capture Claude Code events. Create the JSON-based persistence layer that maintains session state across restarts. Ensure real-time updates flow from hooks to the TUI.
+Implement the core session tracking functionality with integrated Go hook handlers that capture Claude Code events. Create the atomic JSON-based persistence layer with proper data model that maintains session state across restarts. Ensure real-time updates flow from hooks to the TUI with sub-100ms latency.
 
-### Story 2.1: Hook Script Implementation
+### Story 2.1: Hook Event Processing Implementation
 
 As a developer,
-I want hook scripts that capture all Claude Code events,
-so that session data is automatically tracked.
+I want Go-based hook handlers that process all Claude Code events,
+so that session data is accurately tracked with type safety.
 
 #### Acceptance Criteria
-1: Shell scripts created for all critical Claude hooks
-2: Scripts validate and create session directories as needed
-3: Session ID generation is unique and consistent
-4: Scripts handle errors gracefully without blocking Claude
-5: Minimal performance impact (<10ms per hook execution)
+1: Go handlers implemented for all 9 Claude hooks (pre-tool-use, post-tool-use, etc.)
+2: Handlers validate and create session directories atomically
+3: Session ID generation uses format sess_{uuid} consistently
+4: Handlers never block Claude (exit 0 for success, 2 for blocking)
+5: Performance validated at <10ms per hook execution
+6: Safety checks implemented for dangerous operations (rm -rf, .env access)
 
 ### Story 2.2: Session State Management
 
 As a system,
-I want to maintain session state in structured JSON,
-so that sessions can be persisted and recovered.
+I want to maintain session state with proper data model in structured JSON,
+so that sessions can be persisted and recovered accurately.
 
 #### Acceptance Criteria
-1: Session JSON schema includes all required fields
-2: State updates are atomic to prevent corruption
-3: Concurrent modifications are handled safely
-4: Session files are human-readable and editable
-5: Old sessions are archived after configurable duration
+1: Session state includes: agents, agents_history, categorized files (new/edited/read), tools_used map, errors array
+2: State updates use atomic writes (temp file + rename)
+3: File-based locking prevents concurrent corruption
+4: Session files remain human-readable JSON
+5: Modified flag tracks dirty state without persistence
+6: AgentHistoryEntry tracks start/end times for all agents
 
 ### Story 2.3: Real-time Data Pipeline
 
@@ -232,11 +252,11 @@ I want to see all files that were created, edited, or read in a session,
 so that I understand the scope of changes.
 
 #### Acceptance Criteria
-1: File operations are categorized correctly (new/edited/read)
-2: Full absolute paths are captured for all files
-3: Duplicate entries are prevented within categories
-4: File lists are sorted alphabetically for readability
-5: Relative paths can be displayed optionally
+1: File operations categorized into FileOperations struct (new/edited/read arrays)
+2: Full absolute paths captured from tool usage
+3: Duplicate entries prevented within each category
+4: Tool usage counts maintained in tools_used map
+5: Error tracking with timestamp, hook name, and message
 
 ## Epic 3: Plan View Implementation
 
@@ -318,11 +338,12 @@ I want a comprehensive dashboard showing session details,
 so that I understand what's happening in each session.
 
 #### Acceptance Criteria
-1: Dashboard sections for agents, tasks, files, tools
-2: Agents show with current status and activity
-3: Task progress displays as todo/in-progress/done
-4: Tool usage shows with execution counts
-5: Layout adjusts to terminal size intelligently
+1: Dashboard sections for agents, agents_history, files, tools, errors
+2: Agents show current active agents and complete agent history with timestamps
+3: Files displayed in categories: new, edited, read
+4: Tool usage shows as map with tool name and execution count
+5: Errors section displays timestamp, hook name, and message
+6: Layout adjusts to terminal size intelligently
 
 ### Story 4.3: Real-time Dashboard Updates
 

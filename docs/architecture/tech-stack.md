@@ -17,7 +17,7 @@ This is the **DEFINITIVE** technology selection section. These choices will be r
 | **TUI Components** | Bubbles | 0.17.1 | UI components for Bubbletea | Official component library for Bubbletea |
 | **TUI Styling** | Lipgloss | 0.9.1 | Terminal styling | Official styling library for Bubbletea |
 | **Markdown** | Glamour | 0.6.0 | Markdown rendering in terminal | Integrates with Bubbletea ecosystem |
-| **Shell Scripts** | POSIX sh | N/A | Hook scripts | Maximum compatibility as required |
+| **Hook System** | Go (integrated) | 1.21.0 | Claude Code hooks | Native Go performance, type safety |
 | **File Watching** | fsnotify | 1.7.0 | File system events | Production-proven, cross-platform |
 | **Testing** | Go testing | stdlib | Unit tests | Standard Go testing package |
 | **Testing Mock** | testify | 1.8.4 | Test assertions and mocks | Most popular Go testing toolkit |

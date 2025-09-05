@@ -4,7 +4,8 @@
 spcstr/
 ├── cmd/
 │   └── spcstr/
-│       └── main.go                 # Application entry point
+│       ├── main.go                 # Application entry point
+│       └── hook.go                 # Hook subcommand entry
 ├── internal/
 │   ├── cli/
 │   │   ├── root.go                 # Root command setup
@@ -18,10 +19,21 @@ spcstr/
 │   │   ├── validator.go            # Config validation
 │   │   └── xdg.go                  # XDG directory handling
 │   ├── hooks/
-│   │   ├── generator.go            # Hook script generation
-│   │   ├── installer.go            # Hook installation logic
-│   │   ├── templates.go            # Shell script templates
-│   │   └── claude.go               # Claude settings updater
+│   │   ├── handler.go              # Main hook event dispatcher
+│   │   ├── state.go                # Session state management
+│   │   ├── types.go                # Hook data structures
+│   │   ├── persistence.go          # Atomic file I/O operations
+│   │   ├── claude.go               # Claude settings updater
+│   │   └── handlers/               # Individual hook handlers
+│   │       ├── pre_tool_use.go    # Pre-tool safety checks
+│   │       ├── post_tool_use.go   # Tool tracking & file ops
+│   │       ├── session_start.go   # Session initialization
+│   │       ├── session_end.go     # Session finalization
+│   │       ├── user_prompt.go     # Prompt filtering
+│   │       ├── notification.go    # Notification logging
+│   │       ├── stop.go            # Stop handling
+│   │       ├── subagent_stop.go   # Agent tracking
+│   │       └── pre_compact.go     # Compaction prep
 │   ├── session/
 │   │   ├── session.go              # Session data structures
 │   │   ├── manager.go              # Session lifecycle management
@@ -69,16 +81,15 @@ spcstr/
 │       ├── filepath.go             # Path manipulation
 │       └── terminal.go             # Terminal utilities
 ├── pkg/
-│   └── models/
-│       ├── session.go              # Public session types
-│       ├── agent.go                # Agent model
-│       ├── task.go                 # Task model
-│       ├── file.go                 # File operation model
-│       └── document.go             # Document model
+│   ├── models/
+│   │   ├── session.go              # Public session types
+│   │   └── document.go             # Document model
+│   └── hooks/
+│       ├── session_state.go        # SessionState structure
+│       ├── file_operations.go      # FileOperations model
+│       ├── agent_history.go        # AgentHistoryEntry model
+│       └── error_entry.go          # ErrorEntry model
 ├── scripts/
-│   ├── hooks/
-│   │   ├── template.sh.tmpl        # Hook script template
-│   │   └── common.sh               # Shared hook functions
 │   ├── install.sh                  # Installation script
 │   └── release.sh                  # Release build script
 ├── test/
@@ -99,8 +110,7 @@ spcstr/
 │   └── api/                        # Generated API documentation
 ├── .spcstr/                         # Default project config location
 │   ├── config.json                 # Project configuration
-│   ├── sessions/                   # Session data
-│   ├── hooks/                      # Generated hooks
+│   ├── sessions/                   # Session data directories
 │   └── cache/                      # Application cache
 ├── go.mod                           # Go module definition
 ├── go.sum                           # Dependency checksums

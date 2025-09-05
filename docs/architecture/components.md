@@ -14,16 +14,18 @@
 **Technology Stack:** Cobra 1.8.0 for CLI structure, Go 1.21.0
 
 ## Hook Manager Component
-**Responsibility:** Generate, validate, and install Claude Code hook scripts
+**Responsibility:** Handle Claude Code hook events with integrated Go command processing
 
 **Key Interfaces:**
-- GenerateHooks() - Create POSIX-compliant shell scripts
-- InstallHooks() - Write hooks to .spcstr/hooks/
-- UpdateClaudeSettings() - Modify project's .claude/settings.json
+- HandleHook(hookName, stdin) - Process hook events from Claude Code
+- LoadSessionState() - Load current session state atomically
+- SaveSessionState() - Persist state with atomic file operations
+- ValidateToolUsage() - Implement safety checks for dangerous operations
+- UpdateClaudeSettings() - Configure Claude's settings.json for Go hooks
 
-**Dependencies:** Config Manager, File System utilities
+**Dependencies:** Session Manager, Persistence Layer, Config Manager
 
-**Technology Stack:** Go templates for script generation, encoding/json for settings
+**Technology Stack:** Native Go 1.21.0, encoding/json, atomic file operations via temp+rename
 
 ## Session Manager Component
 **Responsibility:** Manage session lifecycle and state persistence

@@ -65,10 +65,14 @@
 **Critical Requirement:** Hook scripts must NEVER block Claude Code
 
 ```bash
-# Error handling in hook scripts
-set +e  # Don't exit on error
-operation || echo "Error: $?" >> .spcstr/logs/hook-errors.log
-exit 0  # Always exit successfully
+// Error handling in Go hooks
+func (h *HookHandler) Execute() error {
+    // Operations that may fail are logged but don't block
+    if err := h.updateState(); err != nil {
+        h.logError(err) // Log but continue
+    }
+    return nil // Always succeed to not block Claude
+}
 ```
 
 ## TUI Error Display

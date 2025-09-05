@@ -9,7 +9,7 @@ Spec⭐️ is a monolithic Go application utilizing an event-driven architecture
 1. **Architectural Style:** Event-Driven Monolith with modular package structure
 2. **Repository Structure:** Monorepo containing all Go packages, hook scripts, and configurations (as specified in PRD)
 3. **Service Architecture:** Single monolithic Go binary with internal modular packages for separation of concerns
-4. **Primary Flow:** Claude Code hooks → Shell scripts → File system events → Go watchers → Channel-based updates → TUI rendering
+4. **Primary Flow:** Claude Code hooks → Go hook command → Atomic file updates → File system events → Go watchers → Channel-based updates → TUI rendering
 5. **Key Decisions:**
    - File-based persistence over database for simplicity and portability
    - Event-driven internal architecture for real-time responsiveness
@@ -32,10 +32,10 @@ graph TB
             RUN[Run Command]
         end
         
-        subgraph "Hook Scripts"
-            HS[Shell Scripts]
-            VALIDATE[Validation]
-            WRITER[JSON Writer]
+        subgraph "Hook System"
+            HC[Hook Command]
+            VALIDATE[Input Validation]
+            ATOMIC[Atomic State Writer]
         end
         
         subgraph "Core Engine"
@@ -60,8 +60,8 @@ graph TB
     end
     
     CC -->|triggers| HOOKS
-    HOOKS -->|execute| HS
-    HS -->|write| SESSIONS
+    HOOKS -->|execute| HC
+    HC -->|atomic write| SESSIONS
     WATCHER -->|monitor| SESSIONS
     WATCHER -->|emit| EVENTS
     EVENTS -->|update| STATE

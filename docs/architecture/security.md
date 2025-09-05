@@ -64,21 +64,14 @@
 - **Environment Variables:** Clear sensitive vars before execution
 - **Script Permissions:** Hook scripts created with 0755 permissions
 
-Example safe hook script:
+Example hook invocation:
 ```bash
-#!/bin/sh
-set -euo pipefail
-SESSION_ID="$1"  # Always quoted
-PROJECT_PATH="$2"  # Always quoted
+# Claude settings.json configuration
+"PreToolUse": "spcstr hook pre-tool-use --cwd=$CLAUDE_PROJECT_DIR"
 
-# Validate inputs
-if [ -z "${SESSION_ID}" ] || [ -z "${PROJECT_PATH}" ]; then
-    exit 0  # Silent failure
-fi
-
-# Safe file write
-printf '{"sessionId":"%s","path":"%s"}\n' \
-    "${SESSION_ID}" "${PROJECT_PATH}" >> ".spcstr/sessions/${SESSION_ID}.json"
+# Hook receives JSON on stdin, returns exit code:
+# 0 = success, continue
+# 2 = blocking operation detected
 ```
 
 ## Terminal Security
