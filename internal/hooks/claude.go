@@ -11,7 +11,7 @@ import (
 
 // ClaudeSettings represents Claude's settings.json structure
 type ClaudeSettings struct {
-	Hooks map[string]string `json:"hooks,omitempty"`
+	Hooks map[string]interface{} `json:"hooks,omitempty"`
 	// Other fields are preserved but not typed
 	Other map[string]interface{} `json:"-"`
 }
@@ -43,16 +43,13 @@ func (cs *ClaudeSettings) UnmarshalJSON(data []byte) error {
 	// Extract hooks if present
 	if hooks, ok := raw["hooks"]; ok {
 		if hooksMap, ok := hooks.(map[string]interface{}); ok {
-			cs.Hooks = make(map[string]string)
-			for k, v := range hooksMap {
-				if str, ok := v.(string); ok {
-					cs.Hooks[k] = str
-				}
-			}
+			cs.Hooks = hooksMap
+		} else {
+			cs.Hooks = make(map[string]interface{})
 		}
 		delete(raw, "hooks")
 	} else {
-		cs.Hooks = make(map[string]string)
+		cs.Hooks = make(map[string]interface{})
 	}
 	
 	// Store remaining fields
@@ -90,7 +87,7 @@ func (cu *ClaudeUpdater) UpdateClaudeSettings(hooksPath string, force bool) erro
 	if !force && len(settings.Hooks) > 0 {
 		// Check if any spcstr hooks already exist
 		for key := range settings.Hooks {
-			if key == "preCommand" || key == "postCommand" || key == "fileModified" || key == "sessionEnd" {
+			if key == "PreToolUse" || key == "PostToolUse" || key == "Notification" || key == "SessionEnd" {
 				return fmt.Errorf("hooks already configured in Claude settings (use --force to overwrite)")
 			}
 		}
@@ -104,13 +101,55 @@ func (cu *ClaudeUpdater) UpdateClaudeSettings(hooksPath string, force bool) erro
 
 	// Update hooks
 	if settings.Hooks == nil {
-		settings.Hooks = make(map[string]string)
+		settings.Hooks = make(map[string]interface{})
 	}
 	
-	settings.Hooks["preCommand"] = filepath.Join(hooksPath, "pre-command.sh")
-	settings.Hooks["postCommand"] = filepath.Join(hooksPath, "post-command.sh")
-	settings.Hooks["fileModified"] = filepath.Join(hooksPath, "file-modified.sh")
-	settings.Hooks["sessionEnd"] = filepath.Join(hooksPath, "session-end.sh")
+	// Create proper Claude Code hook format
+	settings.Hooks["PreToolUse"] = []map[string]interface{}{
+		{
+			"matcher": "*",
+			"hooks": []map[string]interface{}{
+				{
+					"type":    "command",
+					"command": filepath.Join(hooksPath, "pre-command.sh"),
+				},
+			},
+		},
+	}
+	
+	settings.Hooks["PostToolUse"] = []map[string]interface{}{
+		{
+			"matcher": "*", 
+			"hooks": []map[string]interface{}{
+				{
+					"type":    "command",
+					"command": filepath.Join(hooksPath, "post-command.sh"),
+				},
+			},
+		},
+	}
+	
+	settings.Hooks["Notification"] = []map[string]interface{}{
+		{
+			"hooks": []map[string]interface{}{
+				{
+					"type":    "command",
+					"command": filepath.Join(hooksPath, "file-modified.sh"),
+				},
+			},
+		},
+	}
+	
+	settings.Hooks["SessionEnd"] = []map[string]interface{}{
+		{
+			"hooks": []map[string]interface{}{
+				{
+					"type":    "command",
+					"command": filepath.Join(hooksPath, "session-end.sh"),
+				},
+			},
+		},
+	}
 
 	// Save updated settings
 	if err := cu.saveSettings(settingsPath, settings); err != nil {
@@ -139,10 +178,10 @@ func (cu *ClaudeUpdater) RemoveHooks() error {
 	}
 
 	// Remove spcstr hooks
-	delete(settings.Hooks, "preCommand")
-	delete(settings.Hooks, "postCommand")
-	delete(settings.Hooks, "fileModified")
-	delete(settings.Hooks, "sessionEnd")
+	delete(settings.Hooks, "PreToolUse")
+	delete(settings.Hooks, "PostToolUse")
+	delete(settings.Hooks, "Notification")
+	delete(settings.Hooks, "SessionEnd")
 
 	// Save updated settings
 	return cu.saveSettings(settingsPath, settings)
@@ -160,8 +199,8 @@ func (cu *ClaudeUpdater) findClaudeSettings() (string, error) {
 	switch runtime.GOOS {
 	case "darwin":
 		paths = []string{
-			filepath.Join(home, "Library", "Application Support", "Claude", "settings.json"),
 			filepath.Join(home, ".claude", "settings.json"),
+			filepath.Join(home, "Library", "Application Support", "Claude", "settings.json"),
 		}
 	case "windows":
 		if appData := os.Getenv("APPDATA"); appData != "" {
@@ -191,7 +230,7 @@ func (cu *ClaudeUpdater) findClaudeSettings() (string, error) {
 	if err := os.MkdirAll(defaultDir, 0755); err == nil {
 		// Create empty settings file
 		settings := &ClaudeSettings{
-			Hooks: make(map[string]string),
+			Hooks: make(map[string]interface{}),
 			Other: make(map[string]interface{}),
 		}
 		if err := cu.saveSettings(defaultPath, settings); err == nil {
@@ -209,7 +248,7 @@ func (cu *ClaudeUpdater) loadSettings(path string) (*ClaudeSettings, error) {
 		if os.IsNotExist(err) {
 			// Return empty settings if file doesn't exist
 			return &ClaudeSettings{
-				Hooks: make(map[string]string),
+				Hooks: make(map[string]interface{}),
 				Other: make(map[string]interface{}),
 			}, nil
 		}
@@ -227,7 +266,7 @@ func (cu *ClaudeUpdater) loadSettings(path string) (*ClaudeSettings, error) {
 		settings.Other = make(map[string]interface{})
 	}
 	if settings.Hooks == nil {
-		settings.Hooks = make(map[string]string)
+		settings.Hooks = make(map[string]interface{})
 	}
 
 	return &settings, nil

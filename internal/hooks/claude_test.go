@@ -19,9 +19,9 @@ func TestClaudeSettings_MarshalJSON(t *testing.T) {
 		{
 			name: "with hooks",
 			settings: &ClaudeSettings{
-				Hooks: map[string]string{
-					"preCommand":  "/path/to/pre-command.sh",
-					"postCommand": "/path/to/post-command.sh",
+				Hooks: map[string]interface{}{
+					"PreToolUse":  "/path/to/pre-command.sh",
+					"PostToolUse": "/path/to/post-command.sh",
 				},
 				Other: map[string]interface{}{
 					"theme": "dark",
@@ -32,15 +32,15 @@ func TestClaudeSettings_MarshalJSON(t *testing.T) {
 				"theme": "dark",
 				"fontSize": 14,
 				"hooks": {
-					"preCommand": "/path/to/pre-command.sh",
-					"postCommand": "/path/to/post-command.sh"
+					"PreToolUse": "/path/to/pre-command.sh",
+					"PostToolUse": "/path/to/post-command.sh"
 				}
 			}`,
 		},
 		{
 			name: "without hooks",
 			settings: &ClaudeSettings{
-				Hooks: map[string]string{},
+				Hooks: map[string]interface{}{},
 				Other: map[string]interface{}{
 					"theme": "light",
 				},
@@ -52,7 +52,7 @@ func TestClaudeSettings_MarshalJSON(t *testing.T) {
 		{
 			name: "empty settings",
 			settings: &ClaudeSettings{
-				Hooks: map[string]string{},
+				Hooks: map[string]interface{}{},
 				Other: map[string]interface{}{},
 			},
 			want: `{}`,
@@ -81,14 +81,14 @@ func TestClaudeSettings_UnmarshalJSON(t *testing.T) {
 				"theme": "dark",
 				"fontSize": 14,
 				"hooks": {
-					"preCommand": "/path/to/pre-command.sh",
-					"postCommand": "/path/to/post-command.sh"
+					"PreToolUse": "/path/to/pre-command.sh",
+					"PostToolUse": "/path/to/post-command.sh"
 				}
 			}`,
 			want: &ClaudeSettings{
-				Hooks: map[string]string{
-					"preCommand":  "/path/to/pre-command.sh",
-					"postCommand": "/path/to/post-command.sh",
+				Hooks: map[string]interface{}{
+					"PreToolUse":  "/path/to/pre-command.sh",
+					"PostToolUse": "/path/to/post-command.sh",
 				},
 				Other: map[string]interface{}{
 					"theme":    "dark",
@@ -104,7 +104,7 @@ func TestClaudeSettings_UnmarshalJSON(t *testing.T) {
 				"someOtherField": true
 			}`,
 			want: &ClaudeSettings{
-				Hooks: map[string]string{},
+				Hooks: map[string]interface{}{},
 				Other: map[string]interface{}{
 					"theme":          "light",
 					"someOtherField": true,
@@ -116,7 +116,7 @@ func TestClaudeSettings_UnmarshalJSON(t *testing.T) {
 			name:  "empty object",
 			input: `{}`,
 			want: &ClaudeSettings{
-				Hooks: map[string]string{},
+				Hooks: map[string]interface{}{},
 				Other: map[string]interface{}{},
 			},
 			wantErr: false,
@@ -165,8 +165,8 @@ func TestClaudeUpdater_loadSettings(t *testing.T) {
 	// Test loading existing file
 	existingPath := filepath.Join(tmpDir, "settings.json")
 	testSettings := &ClaudeSettings{
-		Hooks: map[string]string{
-			"preCommand": "/test/hook.sh",
+		Hooks: map[string]interface{}{
+			"PreToolUse": "/test/hook.sh",
 		},
 		Other: map[string]interface{}{
 			"theme": "dark",
@@ -190,11 +190,11 @@ func TestClaudeUpdater_saveSettings(t *testing.T) {
 	
 	settingsPath := filepath.Join(tmpDir, "subdir", "settings.json")
 	settings := &ClaudeSettings{
-		Hooks: map[string]string{
-			"preCommand":    "/hooks/pre-command.sh",
-			"postCommand":   "/hooks/post-command.sh",
-			"fileModified":  "/hooks/file-modified.sh",
-			"sessionEnd":    "/hooks/session-end.sh",
+		Hooks: map[string]interface{}{
+			"PreToolUse":   "/hooks/pre-command.sh",
+			"PostToolUse":  "/hooks/post-command.sh",
+			"Notification": "/hooks/file-modified.sh",
+			"SessionEnd":   "/hooks/session-end.sh",
 		},
 		Other: map[string]interface{}{
 			"theme":    "dark",
@@ -278,7 +278,7 @@ func TestClaudeUpdater_UpdateClaudeSettings(t *testing.T) {
 	
 	settingsPath := filepath.Join(settingsDir, "settings.json")
 	initialSettings := &ClaudeSettings{
-		Hooks: map[string]string{},
+		Hooks: map[string]interface{}{},
 		Other: map[string]interface{}{
 			"theme": "dark",
 		},
@@ -296,10 +296,10 @@ func TestClaudeUpdater_UpdateClaudeSettings(t *testing.T) {
 	settings, err := updater.loadSettings(settingsPath)
 	require.NoError(t, err)
 	
-	settings.Hooks["preCommand"] = filepath.Join(hooksPath, "pre-command.sh")
-	settings.Hooks["postCommand"] = filepath.Join(hooksPath, "post-command.sh")
-	settings.Hooks["fileModified"] = filepath.Join(hooksPath, "file-modified.sh")
-	settings.Hooks["sessionEnd"] = filepath.Join(hooksPath, "session-end.sh")
+	settings.Hooks["PreToolUse"] = filepath.Join(hooksPath, "pre-command.sh")
+	settings.Hooks["PostToolUse"] = filepath.Join(hooksPath, "post-command.sh")
+	settings.Hooks["Notification"] = filepath.Join(hooksPath, "file-modified.sh")
+	settings.Hooks["SessionEnd"] = filepath.Join(hooksPath, "session-end.sh")
 	
 	err = updater.saveSettings(settingsPath, settings)
 	assert.NoError(t, err)
@@ -308,7 +308,7 @@ func TestClaudeUpdater_UpdateClaudeSettings(t *testing.T) {
 	loaded, err := updater.loadSettings(settingsPath)
 	assert.NoError(t, err)
 	assert.Len(t, loaded.Hooks, 4)
-	assert.Equal(t, filepath.Join(hooksPath, "pre-command.sh"), loaded.Hooks["preCommand"])
+	assert.Equal(t, filepath.Join(hooksPath, "pre-command.sh"), loaded.Hooks["PreToolUse"])
 	assert.Equal(t, "dark", loaded.Other["theme"]) // Other settings preserved
 }
 
@@ -319,12 +319,12 @@ func TestClaudeUpdater_RemoveHooks(t *testing.T) {
 	// Create settings with hooks
 	settingsPath := filepath.Join(tmpDir, "settings.json")
 	settings := &ClaudeSettings{
-		Hooks: map[string]string{
-			"preCommand":    "/hooks/pre-command.sh",
-			"postCommand":   "/hooks/post-command.sh",
-			"fileModified":  "/hooks/file-modified.sh",
-			"sessionEnd":    "/hooks/session-end.sh",
-			"customHook":    "/custom/hook.sh", // Non-spcstr hook
+		Hooks: map[string]interface{}{
+			"PreToolUse":   "/hooks/pre-command.sh",
+			"PostToolUse":  "/hooks/post-command.sh",
+			"Notification": "/hooks/file-modified.sh",
+			"SessionEnd":   "/hooks/session-end.sh",
+			"customHook":   "/custom/hook.sh", // Non-spcstr hook
 		},
 		Other: map[string]interface{}{
 			"theme": "dark",
@@ -337,10 +337,10 @@ func TestClaudeUpdater_RemoveHooks(t *testing.T) {
 	loaded, err := updater.loadSettings(settingsPath)
 	require.NoError(t, err)
 	
-	delete(loaded.Hooks, "preCommand")
-	delete(loaded.Hooks, "postCommand")
-	delete(loaded.Hooks, "fileModified")
-	delete(loaded.Hooks, "sessionEnd")
+	delete(loaded.Hooks, "PreToolUse")
+	delete(loaded.Hooks, "PostToolUse")
+	delete(loaded.Hooks, "Notification")
+	delete(loaded.Hooks, "SessionEnd")
 	
 	err = updater.saveSettings(settingsPath, loaded)
 	assert.NoError(t, err)
