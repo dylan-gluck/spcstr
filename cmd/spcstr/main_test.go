@@ -18,15 +18,15 @@ func TestVersionCommand(t *testing.T) {
 		want string
 	}{
 		{
-			name: "version constant is set",
-			want: "1.0.0",
+			name: "version variable has default",
+			want: "dev",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if version != tt.want {
-				t.Errorf("version = %v, want %v", version, tt.want)
+			if Version != tt.want {
+				t.Errorf("Version = %v, want %v", Version, tt.want)
 			}
 		})
 	}
@@ -41,8 +41,8 @@ func TestRootCommand(t *testing.T) {
 		t.Errorf("rootCmd.Use = %v, want %v", rootCmd.Use, "spcstr")
 	}
 
-	if rootCmd.Version != version {
-		t.Errorf("rootCmd.Version = %v, want %v", rootCmd.Version, version)
+	if rootCmd.Version != Version {
+		t.Errorf("rootCmd.Version = %v, want %v", rootCmd.Version, Version)
 	}
 }
 

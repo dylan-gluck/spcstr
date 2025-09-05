@@ -7,10 +7,16 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/dylan/spcstr/internal/config"
 	"github.com/dylan/spcstr/internal/hooks"
 )
 
-const version = "1.0.0"
+// Build variables set via ldflags
+var (
+	Version   = "dev"
+	GitCommit = "unknown"
+	BuildDate = "unknown"
+)
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
@@ -23,10 +29,12 @@ var rootCmd = &cobra.Command{
 	Use:     "spcstr",
 	Short:   "spcstr - a CLI/TUI tool for Claude Code session observability",
 	Long:    `spcstr provides real-time observability for Claude Code sessions through hook integration and an interactive terminal interface.`,
-	Version: version,
+	Version: Version,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("spcstr v%s\n", version)
-		fmt.Println("Use 'spcstr --help' for more information.")
+		// When no subcommands are provided, launch TUI
+		// TODO: Launch TUI application once internal/tui/app is implemented
+		fmt.Printf("spcstr v%s\n", Version)
+		fmt.Println("TUI mode will be available soon. Use 'spcstr --help' for available commands.")
 	},
 }
 
@@ -34,7 +42,19 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number of spcstr",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("spcstr v%s\n", version)
+		fmt.Printf("spcstr version %s\n", Version)
+		fmt.Printf("Git commit: %s\n", GitCommit)
+		fmt.Printf("Built: %s\n", BuildDate)
+	},
+}
+
+var initCmd = &cobra.Command{
+	Use:   "init",
+	Short: "Initialize spcstr for a project",
+	Long:  `Initialize spcstr by creating the .spcstr directory structure and configuring Claude Code hooks in .claude/settings.json`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		force, _ := cmd.Flags().GetBool("force")
+		return config.InitializeProject(force)
 	},
 }
 
@@ -81,7 +101,14 @@ var hookCmd = &cobra.Command{
 }
 
 func init() {
+	// Init command flags
+	initCmd.Flags().BoolP("force", "f", false, "Force reinitialization without prompting")
+	
+	// Hook command flags
 	hookCmd.Flags().StringP("cwd", "c", "", "Working directory for hook execution (project root)")
+	
+	// Add commands to root
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(hookCmd)
 }
