@@ -19,25 +19,25 @@ func TestRunCommand(t *testing.T) {
 			name:    "basic run",
 			args:    []string{},
 			wantErr: false,
-			wantOut: "Launching Spec⭐️ TUI",
+			wantOut: "Launching spcstr TUI",
 		},
 		{
 			name:    "run with session flag",
 			args:    []string{"--session", "sess_12345"},
 			wantErr: false,
-			wantOut: "Launching Spec⭐️ TUI",
+			wantOut: "Launching spcstr TUI",
 		},
 		{
 			name:    "run with plan flag",
 			args:    []string{"--plan"},
 			wantErr: false,
-			wantOut: "Launching Spec⭐️ TUI",
+			wantOut: "Launching spcstr TUI",
 		},
 		{
 			name:    "run with observe flag",
 			args:    []string{"--observe"},
 			wantErr: false,
-			wantOut: "Launching Spec⭐️ TUI",
+			wantOut: "Launching spcstr TUI",
 		},
 	}
 

@@ -2,6 +2,8 @@ package cli
 
 import (
 	"bytes"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -10,33 +12,69 @@ import (
 
 func TestInitCommand(t *testing.T) {
 	tests := []struct {
-		name    string
-		args    []string
-		wantErr bool
-		wantOut string
+		name       string
+		args       []string
+		setupFunc  func(string) error
+		wantErr    bool
+		wantOut    string
+		notWantOut string
 	}{
 		{
-			name:    "basic init",
-			args:    []string{},
+			name: "basic init in clean directory",
+			args: []string{},
+			setupFunc: func(dir string) error {
+				// Clean directory, no setup needed
+				return nil
+			},
 			wantErr: false,
-			wantOut: "Initializing Spec⭐️",
+			wantOut: "Successfully initialized spcstr",
 		},
 		{
-			name:    "init with force flag",
-			args:    []string{"--force"},
-			wantErr: false,
-			wantOut: "Initializing Spec⭐️",
+			name: "init with existing .spcstr",
+			args: []string{},
+			setupFunc: func(dir string) error {
+				// Create .spcstr directory
+				return os.MkdirAll(filepath.Join(dir, ".spcstr"), 0755)
+			},
+			wantErr:    true,
+			wantOut:    ".spcstr directory already exists",
+			notWantOut: "Successfully initialized",
 		},
 		{
-			name:    "init with template flag",
-			args:    []string{"--template", "default"},
+			name: "init with force flag and existing .spcstr",
+			args: []string{"--force"},
+			setupFunc: func(dir string) error {
+				// Create .spcstr directory
+				return os.MkdirAll(filepath.Join(dir, ".spcstr"), 0755)
+			},
 			wantErr: false,
-			wantOut: "Initializing Spec⭐️",
+			wantOut: "Successfully initialized spcstr",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Create a temporary directory for each test
+			tmpDir := t.TempDir()
+			
+			// Change to temp directory
+			oldDir, err := os.Getwd()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer os.Chdir(oldDir)
+			
+			if err := os.Chdir(tmpDir); err != nil {
+				t.Fatal(err)
+			}
+			
+			// Run setup function if provided
+			if tt.setupFunc != nil {
+				if err := tt.setupFunc(tmpDir); err != nil {
+					t.Fatalf("Setup failed: %v", err)
+				}
+			}
+			
 			// Create a fresh command for each test to avoid state issues
 			rootCmd := &cobra.Command{Use: "spcstr"}
 			rootCmd.AddCommand(initCmd)
@@ -47,17 +85,19 @@ func TestInitCommand(t *testing.T) {
 			rootCmd.SetOut(buf)
 			rootCmd.SetErr(buf)
 
-			err := rootCmd.Execute()
-			output := buf.String()
-
-			// Check error
+			err = rootCmd.Execute()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Execute() error = %v, wantErr %v", err, tt.wantErr)
+				return
 			}
 
-			// Check output
-			if !strings.Contains(output, tt.wantOut) {
-				t.Errorf("Output doesn't contain expected string.\nWant substring: %s\nGot output: %s", tt.wantOut, output)
+			output := buf.String()
+			if tt.wantOut != "" && !strings.Contains(output, tt.wantOut) {
+				t.Errorf("Output does not contain expected text.\nWant: %s\nGot: %s", tt.wantOut, output)
+			}
+			
+			if tt.notWantOut != "" && strings.Contains(output, tt.notWantOut) {
+				t.Errorf("Output contains unexpected text.\nDon't want: %s\nGot: %s", tt.notWantOut, output)
 			}
 		})
 	}
@@ -71,7 +111,6 @@ func TestInitCommandFlags(t *testing.T) {
 		flagType  string
 	}{
 		{"force", "f", "bool"},
-		{"template", "t", "string"},
 	}
 
 	for _, tt := range tests {

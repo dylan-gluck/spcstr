@@ -2,7 +2,7 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Spec⭐️ (spec-star) is a session persistence tool for Claude Code that tracks and visualizes AI agent activities. It manages project context across multiple Claude sessions to maintain continuity and momentum in your development workflow.
+Spec⭐️ (spcstr) is a session persistence tool for Claude Code that tracks and visualizes AI agent activities. It manages project context across multiple Claude sessions to maintain continuity and momentum in your development workflow.
 
 ## Installation
 
