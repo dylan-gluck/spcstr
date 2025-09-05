@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "scope": "project",
+  "paths": {
+    "hooks": ".spcstr/hooks",
+    "sessions": ".spcstr/sessions",
+    "docs": [
+      "docs/"
+    ]
+  },
+  "ui": {
+    "theme": "dark",
+    "refreshInterval": 500
+  },
+  "session": {
+    "retentionDays": 30,
+    "autoArchive": true,
+    "maxActiveSession": 10
+  }
+}

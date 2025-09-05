@@ -30,8 +30,8 @@ go.work.sum
 .DS_Store
 
 # Application specific
-.spcstr/
-!docs/**/.spcstr
+#.spcstr/
+#!docs/**/.spcstr
 
 # Build artifacts
 dist/
