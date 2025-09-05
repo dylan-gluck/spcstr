@@ -1,0 +1,17 @@
+{
+  "session_id": "basic_test_session",
+  "created_at": "2025-09-05T23:01:16.961304Z",
+  "updated_at": "2025-09-05T23:01:16.96196Z",
+  "session_active": false,
+  "agents": [],
+  "agents_history": [],
+  "files": {
+    "new": [],
+    "edited": [],
+    "read": []
+  },
+  "tools_used": {},
+  "errors": [],
+  "prompts": [],
+  "notifications": []
+}

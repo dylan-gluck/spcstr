@@ -1,0 +1,45 @@
+{
+  "session_id": "integration_test_session",
+  "created_at": "2025-09-05T23:01:16.966747Z",
+  "updated_at": "2025-09-05T23:01:16.969006Z",
+  "session_active": false,
+  "agents": [],
+  "agents_history": [
+    {
+      "name": "test_agent",
+      "started_at": "2025-09-05T23:01:16.967584Z",
+      "completed_at": "2025-09-05T23:01:16.968349Z"
+    }
+  ],
+  "files": {
+    "new": [
+      "test.go"
+    ],
+    "edited": [
+      "main.go"
+    ],
+    "read": [
+      "config.json"
+    ]
+  },
+  "tools_used": {
+    "Task": 1
+  },
+  "errors": [],
+  "prompts": [
+    {
+      "timestamp": "2023-06-15T14:30:00Z",
+      "prompt": "Hello, this is an integration test!",
+      "response": "",
+      "tools_used": []
+    }
+  ],
+  "notifications": [
+    {
+      "timestamp": "2023-06-15T14:35:00Z",
+      "type": "hook",
+      "message": "Integration test notification",
+      "level": "info"
+    }
+  ]
+}

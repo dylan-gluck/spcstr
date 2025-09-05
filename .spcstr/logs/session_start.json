@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": "2025-09-05T19:10:23.917751-04:00",
+    "session_id": "project_test",
+    "hook_name": "session_start",
+    "input_data": {
+      "session_id": "project_test",
+      "source": "project_test"
+    },
+    "success": true
+  }
+]
