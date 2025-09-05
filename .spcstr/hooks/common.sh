@@ -3,16 +3,13 @@
 # All hooks must exit 0 to not block Claude Code
 set +e  # Don't exit on error
 
-# Log file location
-LOG_FILE="${CLAUDE_PROJECT_DIR}/.spcstr/hooks.log"
-
 # Safe logging function
 log_error() {
-    printf "[%s] ERROR: %s\n" "$(date '+%Y-%m-%d %H:%M:%S')" "$1" >> "${LOG_FILE}" 2>/dev/null || true
+    printf "[%s] ERROR: %s\n" "$(date '+%Y-%m-%d %H:%M:%S')" "$1" >> "<no value>" 2>/dev/null || true
 }
 
 log_info() {
-    printf "[%s] INFO: %s\n" "$(date '+%Y-%m-%d %H:%M:%S')" "$1" >> "${LOG_FILE}" 2>/dev/null || true
+    printf "[%s] INFO: %s\n" "$(date '+%Y-%m-%d %H:%M:%S')" "$1" >> "<no value>" 2>/dev/null || true
 }
 
 # Create session data with proper escaping
@@ -28,6 +25,6 @@ create_session_data() {
 
 # Ensure log directory exists
 ensure_log_dir() {
-    log_dir="$(dirname "${LOG_FILE}")"
+    log_dir="$(dirname "<no value>")"
     [ -d "${log_dir}" ] || mkdir -p "${log_dir}" 2>/dev/null || true
 }

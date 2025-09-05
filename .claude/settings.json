@@ -1,58 +1,67 @@
 {
   "hooks": {
-    "UserPromptSubmit": [
+    "Notification": [
       {
-        "matcher": "",
         "hooks": [
           {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/user-prompt-submit.sh"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/pre-tool-use.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/file-modified.sh",
+            "type": "command"
           }
         ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "Edit|Write|MultiEdit",
         "hooks": [
           {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/post-tool-use.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/post-command.sh",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/pre-command.sh",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/session-end.sh",
+            "type": "command"
           }
         ]
       }
     ],
     "SessionStart": [
       {
-        "matcher": "",
         "hooks": [
           {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/session-start.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/session-start.sh",
+            "type": "command"
           }
-        ]
+        ],
+        "matcher": ""
       }
     ],
-    "SessionEnd": [
+    "UserPromptSubmit": [
       {
-        "matcher": "",
         "hooks": [
           {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/session-end.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/user-prompt-submit.sh",
+            "type": "command"
           }
-        ]
+        ],
+        "matcher": ""
       }
     ]
   }

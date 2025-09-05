@@ -24,7 +24,7 @@ so that all necessary hooks and configuration are automatically set up.
 ### Acceptance Criteria
 1: `spcstr init` creates .spcstr/ directory structure
 2: Hook scripts are written to .spcstr/hooks/ directory
-3: Claude settings.json is updated with hook configurations
+3: Project's .claude/settings.json is created/updated with hook configurations
 4: Command detects existing configuration and prompts before overwriting
 5: Success message confirms initialization with next steps
 

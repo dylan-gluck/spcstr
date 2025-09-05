@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"runtime"
 	"time"
 )
 
@@ -67,8 +66,12 @@ func NewClaudeUpdater() *ClaudeUpdater {
 
 // UpdateClaudeSettings updates Claude's settings.json with hook configurations
 func (cu *ClaudeUpdater) UpdateClaudeSettings(hooksPath string, force bool) error {
-	// Find Claude settings file
-	settingsPath, err := cu.findClaudeSettings()
+	// Extract project directory from hooks path
+	// hooksPath is like "/path/to/project/.spcstr/hooks"
+	projectDir := filepath.Dir(filepath.Dir(hooksPath))
+	
+	// Find Claude settings file in project directory
+	settingsPath, err := cu.findClaudeSettings(projectDir)
 	if err != nil {
 		return fmt.Errorf("finding Claude settings: %w", err)
 	}
@@ -104,14 +107,14 @@ func (cu *ClaudeUpdater) UpdateClaudeSettings(hooksPath string, force bool) erro
 		settings.Hooks = make(map[string]interface{})
 	}
 	
-	// Create proper Claude Code hook format
+	// Create proper Claude Code hook format using $CLAUDE_PROJECT_DIR
 	settings.Hooks["PreToolUse"] = []map[string]interface{}{
 		{
 			"matcher": "*",
 			"hooks": []map[string]interface{}{
 				{
 					"type":    "command",
-					"command": filepath.Join(hooksPath, "pre-command.sh"),
+					"command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/pre-command.sh",
 				},
 			},
 		},
@@ -123,7 +126,7 @@ func (cu *ClaudeUpdater) UpdateClaudeSettings(hooksPath string, force bool) erro
 			"hooks": []map[string]interface{}{
 				{
 					"type":    "command",
-					"command": filepath.Join(hooksPath, "post-command.sh"),
+					"command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/post-command.sh",
 				},
 			},
 		},
@@ -134,7 +137,7 @@ func (cu *ClaudeUpdater) UpdateClaudeSettings(hooksPath string, force bool) erro
 			"hooks": []map[string]interface{}{
 				{
 					"type":    "command",
-					"command": filepath.Join(hooksPath, "file-modified.sh"),
+					"command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/file-modified.sh",
 				},
 			},
 		},
@@ -145,7 +148,7 @@ func (cu *ClaudeUpdater) UpdateClaudeSettings(hooksPath string, force bool) erro
 			"hooks": []map[string]interface{}{
 				{
 					"type":    "command",
-					"command": filepath.Join(hooksPath, "session-end.sh"),
+					"command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/session-end.sh",
 				},
 			},
 		},
@@ -163,7 +166,13 @@ func (cu *ClaudeUpdater) UpdateClaudeSettings(hooksPath string, force bool) erro
 
 // RemoveHooks removes spcstr hooks from Claude settings
 func (cu *ClaudeUpdater) RemoveHooks() error {
-	settingsPath, err := cu.findClaudeSettings()
+	// Get current working directory as project directory
+	cwd, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("getting current directory: %w", err)
+	}
+	
+	settingsPath, err := cu.findClaudeSettings(cwd)
 	if err != nil {
 		return fmt.Errorf("finding Claude settings: %w", err)
 	}
@@ -187,58 +196,32 @@ func (cu *ClaudeUpdater) RemoveHooks() error {
 	return cu.saveSettings(settingsPath, settings)
 }
 
-// findClaudeSettings finds the Claude settings.json file
-func (cu *ClaudeUpdater) findClaudeSettings() (string, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
+// findClaudeSettings finds the Claude settings.json file in the project directory
+func (cu *ClaudeUpdater) findClaudeSettings(projectDir string) (string, error) {
+	// Look for .claude/settings.json in the project directory
+	settingsPath := filepath.Join(projectDir, ".claude", "settings.json")
+	
+	// Check if it exists
+	if _, err := os.Stat(settingsPath); err == nil {
+		return settingsPath, nil
 	}
-
-	// Define possible paths based on OS
-	var paths []string
-	switch runtime.GOOS {
-	case "darwin":
-		paths = []string{
-			filepath.Join(home, ".claude", "settings.json"),
-			filepath.Join(home, "Library", "Application Support", "Claude", "settings.json"),
-		}
-	case "windows":
-		if appData := os.Getenv("APPDATA"); appData != "" {
-			paths = append(paths, filepath.Join(appData, "Claude", "settings.json"))
-		}
-		paths = append(paths,
-			filepath.Join(home, "AppData", "Roaming", "Claude", "settings.json"),
-			filepath.Join(home, ".claude", "settings.json"),
-		)
-	default: // Linux and others
-		paths = []string{
-			filepath.Join(home, ".config", "claude", "settings.json"),
-			filepath.Join(home, ".claude", "settings.json"),
-		}
+	
+	// Try to create it if it doesn't exist
+	claudeDir := filepath.Join(projectDir, ".claude")
+	if err := os.MkdirAll(claudeDir, 0755); err != nil {
+		return "", fmt.Errorf("creating .claude directory: %w", err)
 	}
-
-	// Check each path
-	for _, path := range paths {
-		if _, err := os.Stat(path); err == nil {
-			return path, nil
-		}
+	
+	// Create empty settings file
+	settings := &ClaudeSettings{
+		Hooks: make(map[string]interface{}),
+		Other: make(map[string]interface{}),
 	}
-
-	// Try to create a default location if none exists
-	defaultPath := paths[0]
-	defaultDir := filepath.Dir(defaultPath)
-	if err := os.MkdirAll(defaultDir, 0755); err == nil {
-		// Create empty settings file
-		settings := &ClaudeSettings{
-			Hooks: make(map[string]interface{}),
-			Other: make(map[string]interface{}),
-		}
-		if err := cu.saveSettings(defaultPath, settings); err == nil {
-			return defaultPath, nil
-		}
+	if err := cu.saveSettings(settingsPath, settings); err != nil {
+		return "", fmt.Errorf("creating settings file: %w", err)
 	}
-
-	return "", nil
+	
+	return settingsPath, nil
 }
 
 // loadSettings loads Claude settings from file

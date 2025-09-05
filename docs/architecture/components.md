@@ -19,7 +19,7 @@
 **Key Interfaces:**
 - GenerateHooks() - Create POSIX-compliant shell scripts
 - InstallHooks() - Write hooks to .spcstr/hooks/
-- UpdateClaudeSettings() - Modify Claude's settings.json
+- UpdateClaudeSettings() - Modify project's .claude/settings.json
 
 **Dependencies:** Config Manager, File System utilities
 

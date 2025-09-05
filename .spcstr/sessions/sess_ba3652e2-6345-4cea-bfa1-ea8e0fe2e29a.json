@@ -1,0 +1,18 @@
+{
+  "sessionId": "sess_ba3652e2-6345-4cea-bfa1-ea8e0fe2e29a",
+  "startTime": "2025-09-05T12:46:51Z",
+  "source": "startup",
+  "status": "active",
+  "agents": [],
+  "tasks": [],
+  "files": [],
+  "tools": [],
+  "errors": [],
+  "events": [
+    {
+      "type": "session_start",
+      "timestamp": "2025-09-05T12:46:51Z",
+      "source": "startup"
+    }
+  ]
+}

@@ -1,39 +1,39 @@
 #!/bin/sh
-# spcstr SessionEnd hook - finalizes session tracking
-# Must exit 0 to not block Claude Code operations
+set +e  # Don't exit on error - CRITICAL: Never block Claude Code
 
 # Source common functions
-. "${CLAUDE_PROJECT_DIR}/.spcstr/hooks/common.sh" 2>/dev/null || true
+. "/Users/dylan/Workspace/projects/spcstr/.spcstr/hooks/common.sh" 2>/dev/null || true
 
-# Parse JSON input from stdin
-input="$(cat)"
-session_id="$(echo "${input}" | grep -o '"session_id":"[^"]*' | cut -d'"' -f4)" 2>/dev/null || true
-reason="$(echo "${input}" | grep -o '"reason":"[^"]*' | cut -d'"' -f4)" 2>/dev/null || true
+# Ensure log directory exists
+ensure_log_dir
 
-# Session file path
-session_dir="${CLAUDE_PROJECT_DIR}/.spcstr/sessions"
-session_file="${session_dir}/sess_${session_id}.json"
+# Log session end event
+log_info "Session-end hook triggered"
 
-# Mark session as ended if file exists
-if [ -f "${session_file}" ]; then
-    timestamp="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-    
-    # Update status to ended (simplified for POSIX sh)
-    temp_file="${session_file}.tmp"
-    if sed "s/\"status\": \"active\"/\"status\": \"ended\"/g" "${session_file}" > "${temp_file}" 2>/dev/null; then
-        mv "${temp_file}" "${session_file}" 2>/dev/null || true
-    fi
-    
-    # Log end event
-    log_info "Session ended: sess_${session_id} (reason: ${reason:-unknown})"
-    
-    # Archive session to history if configured
-    history_dir="${session_dir}/history"
-    if [ -d "${history_dir}" ] || mkdir -p "${history_dir}" 2>/dev/null; then
-        archive_name="$(date '+%Y%m%d_%H%M%S')_sess_${session_id}.json"
-        cp "${session_file}" "${history_dir}/${archive_name}" 2>/dev/null || true
+# Get session ID from environment if available
+SESSION_ID="${CLAUDE_SESSION_ID:-unknown}"
+
+# Archive session if it exists
+if [ "${SESSION_ID}" != "unknown" ]; then
+    ACTIVE_FILE="/Users/dylan/Workspace/projects/spcstr/.spcstr/sessions/active/sess_${SESSION_ID}.json"
+    if [ -f "${ACTIVE_FILE}" ]; then
+        # Move to archive with timestamp
+        ARCHIVE_DIR="/Users/dylan/Workspace/projects/spcstr/.spcstr/sessions/archive"
+        [ -d "${ARCHIVE_DIR}" ] || mkdir -p "${ARCHIVE_DIR}" 2>/dev/null || true
+        
+        TIMESTAMP="$(date '+%Y%m%d_%H%M%S')"
+        ARCHIVE_FILE="${ARCHIVE_DIR}/sess_${SESSION_ID}_${TIMESTAMP}.json"
+        
+        mv "${ACTIVE_FILE}" "${ARCHIVE_FILE}" 2>/dev/null && \
+            log_info "Archived session ${SESSION_ID}" || \
+            log_error "Failed to archive session ${SESSION_ID}"
     fi
 fi
 
-# Always exit 0 to not block Claude Code
+# Clean up old sessions based on retention policy
+# This would normally check config for retention days
+# For now, just log that cleanup would occur
+log_info "Session cleanup check completed"
+
+# Always exit successfully
 exit 0
