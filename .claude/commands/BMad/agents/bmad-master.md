@@ -62,6 +62,7 @@ commands:
   - kb: Toggle KB mode off (default) or on, when on will load and reference the .bmad-core/data/bmad-kb.md and converse with the user answering his questions with this informational resource
   - shard-doc {document} {destination}: run the task shard-doc against the optionally provided document to the specified destination
   - task {task}: Execute task, if not found or none specified, ONLY list available dependencies/tasks listed below
+  - workflow {workflow}: Execute workflow, if not found or none specified, ONLY list available dependencies/workflows listed below
   - yolo: Toggle Yolo Mode
   - exit: Exit (confirm)
 
