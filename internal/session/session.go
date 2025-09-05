@@ -97,16 +97,26 @@ func SaveSessionState(projectRoot string, state *models.SessionState) error {
 		return fmt.Errorf("failed to create session directory: %w", err)
 	}
 
-	state.LastUpdate = models.CurrentTimestamp()
-	state.Modified = true
+	// Create a deep copy of the state to avoid concurrent map access
+	stateCopy := *state
+	if state.ToolsUsed != nil {
+		stateCopy.ToolsUsed = make(map[string]int)
+		for k, v := range state.ToolsUsed {
+			stateCopy.ToolsUsed[k] = v
+		}
+	}
 
-	data, err := json.MarshalIndent(state, "", "  ")
+	stateCopy.LastUpdate = models.CurrentTimestamp()
+	stateCopy.Modified = true
+
+	data, err := json.MarshalIndent(&stateCopy, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal session state: %w", err)
 	}
 
 	sessionFile := filepath.Join(sessionDir, "session_state.json")
-	tempFile := sessionFile + ".tmp"
+	// Use process ID and timestamp to ensure unique temp file names in concurrent scenarios
+	tempFile := fmt.Sprintf("%s.tmp.%d.%d", sessionFile, os.Getpid(), time.Now().UnixNano())
 
 	if err := os.WriteFile(tempFile, data, 0644); err != nil {
 		return fmt.Errorf("failed to write temp file: %w", err)
@@ -118,7 +128,9 @@ func SaveSessionState(projectRoot string, state *models.SessionState) error {
 	}
 
 	stateMutex.Lock()
-	stateCache = state
+	// Create a copy for the cache as well
+	cacheCopy := stateCopy
+	stateCache = &cacheCopy
 	cacheTime = time.Now()
 	stateMutex.Unlock()
 

@@ -40,7 +40,8 @@ func AtomicWriteJSON(filePath string, data interface{}) error {
 		return fmt.Errorf("failed to marshal JSON: %w", err)
 	}
 
-	tempFile := fmt.Sprintf("%s.tmp.%d", filePath, time.Now().UnixNano())
+	// Use process ID and timestamp to ensure unique temp file names
+	tempFile := fmt.Sprintf("%s.tmp.%d.%d", filePath, os.Getpid(), time.Now().UnixNano())
 
 	if err := os.WriteFile(tempFile, jsonData, 0644); err != nil {
 		return fmt.Errorf("failed to write temp file: %w", err)

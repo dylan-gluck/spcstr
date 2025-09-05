@@ -4,7 +4,7 @@
 # Variables
 BINARY_NAME := spcstr
 BINARY_PATH := bin/$(BINARY_NAME)
-MAIN_PATH := cmd/spcstr/main.go
+MAIN_PATH := ./cmd/spcstr
 INSTALL_PATH := $(GOPATH)/bin
 
 # Default target

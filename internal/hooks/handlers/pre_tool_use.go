@@ -42,21 +42,33 @@ func HandlePreToolUse(projectRoot string, data map[string]interface{}) error {
 func isDangerousCommand(command string) bool {
 	dangerous := []string{
 		"rm -rf /",
+		"rm -rf /*",
 		"dd if=/dev/zero",
+		"dd if=/dev/random",
 		"mkfs",
 		"format",
 		"> /dev/sda",
+		"> /dev/sd",
 		"chmod -R 777 /",
+		"chmod 777 /",
 		"curl | sh",
+		"curl | bash",
 		"wget | sh",
+		"wget | bash",
 		"eval",
+		":(){ :|:& };:", // Fork bomb
 	}
 
-	cmd := strings.ToLower(command)
+	cmd := strings.ToLower(strings.TrimSpace(command))
 	for _, d := range dangerous {
 		if strings.Contains(cmd, strings.ToLower(d)) {
 			return true
 		}
+	}
+
+	// Additional checks for patterns
+	if strings.HasPrefix(cmd, "rm -rf /") || strings.HasPrefix(cmd, "rm -fr /") {
+		return true
 	}
 
 	return false
