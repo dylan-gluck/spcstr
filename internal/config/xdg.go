@@ -128,7 +128,7 @@ func GetProjectConfigPath(projectRoot string) string {
 // FindProjectRoot searches for .spcstr directory in current or parent directories
 func FindProjectRoot(startPath string) (string, error) {
 	current := startPath
-	
+
 	for {
 		// Check if .spcstr exists in current directory
 		spcstrPath := filepath.Join(current, ".spcstr")
@@ -138,12 +138,12 @@ func FindProjectRoot(startPath string) (string, error) {
 
 		// Move to parent directory
 		parent := filepath.Dir(current)
-		
+
 		// Check if we've reached the root
 		if parent == current {
 			break
 		}
-		
+
 		current = parent
 	}
 

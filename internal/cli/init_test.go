@@ -56,25 +56,25 @@ func TestInitCommand(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create a temporary directory for each test
 			tmpDir := t.TempDir()
-			
+
 			// Change to temp directory
 			oldDir, err := os.Getwd()
 			if err != nil {
 				t.Fatal(err)
 			}
 			defer os.Chdir(oldDir)
-			
+
 			if err := os.Chdir(tmpDir); err != nil {
 				t.Fatal(err)
 			}
-			
+
 			// Run setup function if provided
 			if tt.setupFunc != nil {
 				if err := tt.setupFunc(tmpDir); err != nil {
 					t.Fatalf("Setup failed: %v", err)
 				}
 			}
-			
+
 			// Create a fresh command for each test to avoid state issues
 			rootCmd := &cobra.Command{Use: "spcstr"}
 			rootCmd.AddCommand(initCmd)
@@ -95,7 +95,7 @@ func TestInitCommand(t *testing.T) {
 			if tt.wantOut != "" && !strings.Contains(output, tt.wantOut) {
 				t.Errorf("Output does not contain expected text.\nWant: %s\nGot: %s", tt.wantOut, output)
 			}
-			
+
 			if tt.notWantOut != "" && strings.Contains(output, tt.notWantOut) {
 				t.Errorf("Output contains unexpected text.\nDon't want: %s\nGot: %s", tt.notWantOut, output)
 			}

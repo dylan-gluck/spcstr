@@ -218,11 +218,11 @@ func TestValidateConfig(t *testing.T) {
 			errMsg:  "at least one docs path is required",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := ValidateConfig(tt.cfg)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				if tt.errMsg != "" {
@@ -250,7 +250,7 @@ func TestIsValidVersion(t *testing.T) {
 		{"1.a.0", false},
 		{"1.0.0-beta", false},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.version, func(t *testing.T) {
 			result := isValidVersion(tt.version)
@@ -275,7 +275,7 @@ func TestIsValidPath(t *testing.T) {
 		{".", true},
 		{"./subdir", true},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.path, func(t *testing.T) {
 			result := isValidPath(tt.path)
@@ -326,11 +326,11 @@ func TestIsValidConfigPath(t *testing.T) {
 			errMsg:  "config path cannot contain parent directory references",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := IsValidConfigPath(tt.path)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				if tt.errMsg != "" {
@@ -355,7 +355,7 @@ func TestContains(t *testing.T) {
 		{[]string{"test"}, "test", true},
 		{[]string{"test"}, "Test", false}, // case sensitive
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.item, func(t *testing.T) {
 			result := contains(tt.slice, tt.item)

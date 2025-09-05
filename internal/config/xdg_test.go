@@ -15,20 +15,20 @@ func TestGetXDGConfigHome(t *testing.T) {
 	// Save original env
 	originalXDG := os.Getenv("XDG_CONFIG_HOME")
 	defer os.Setenv("XDG_CONFIG_HOME", originalXDG)
-	
+
 	// Test with XDG_CONFIG_HOME set
 	testPath := "/custom/config"
 	os.Setenv("XDG_CONFIG_HOME", testPath)
 	result := GetXDGConfigHome()
 	assert.Equal(t, testPath, result)
-	
+
 	// Test with XDG_CONFIG_HOME unset
 	os.Unsetenv("XDG_CONFIG_HOME")
 	result = GetXDGConfigHome()
-	
+
 	home, err := os.UserHomeDir()
 	require.NoError(t, err)
-	
+
 	switch runtime.GOOS {
 	case "darwin":
 		assert.Equal(t, filepath.Join(home, "Library", "Application Support"), result)
@@ -44,20 +44,20 @@ func TestGetXDGDataHome(t *testing.T) {
 	// Save original env
 	originalXDG := os.Getenv("XDG_DATA_HOME")
 	defer os.Setenv("XDG_DATA_HOME", originalXDG)
-	
+
 	// Test with XDG_DATA_HOME set
 	testPath := "/custom/data"
 	os.Setenv("XDG_DATA_HOME", testPath)
 	result := GetXDGDataHome()
 	assert.Equal(t, testPath, result)
-	
+
 	// Test with XDG_DATA_HOME unset
 	os.Unsetenv("XDG_DATA_HOME")
 	result = GetXDGDataHome()
-	
+
 	home, err := os.UserHomeDir()
 	require.NoError(t, err)
-	
+
 	switch runtime.GOOS {
 	case "darwin":
 		assert.Equal(t, filepath.Join(home, "Library", "Application Support"), result)
@@ -72,20 +72,20 @@ func TestGetXDGCacheHome(t *testing.T) {
 	// Save original env
 	originalXDG := os.Getenv("XDG_CACHE_HOME")
 	defer os.Setenv("XDG_CACHE_HOME", originalXDG)
-	
+
 	// Test with XDG_CACHE_HOME set
 	testPath := "/custom/cache"
 	os.Setenv("XDG_CACHE_HOME", testPath)
 	result := GetXDGCacheHome()
 	assert.Equal(t, testPath, result)
-	
+
 	// Test with XDG_CACHE_HOME unset
 	os.Unsetenv("XDG_CACHE_HOME")
 	result = GetXDGCacheHome()
-	
+
 	home, err := os.UserHomeDir()
 	require.NoError(t, err)
-	
+
 	switch runtime.GOOS {
 	case "darwin":
 		assert.Equal(t, filepath.Join(home, "Library", "Caches"), result)
@@ -100,10 +100,10 @@ func TestGetSpcstrDirs(t *testing.T) {
 	// These should append "spcstr" to the XDG directories
 	configDir := GetSpcstrConfigDir()
 	assert.True(t, strings.HasSuffix(configDir, "spcstr"))
-	
+
 	dataDir := GetSpcstrDataDir()
 	assert.True(t, strings.HasSuffix(dataDir, "spcstr"))
-	
+
 	cacheDir := GetSpcstrCacheDir()
 	assert.True(t, strings.HasSuffix(cacheDir, "spcstr"))
 }
@@ -123,18 +123,18 @@ func TestGetProjectConfigPath(t *testing.T) {
 func TestFindProjectRoot(t *testing.T) {
 	// Create temp directory structure
 	tmpDir := t.TempDir()
-	
+
 	// Create project with .spcstr
 	projectDir := filepath.Join(tmpDir, "project")
 	spcstrDir := filepath.Join(projectDir, ".spcstr")
 	err := os.MkdirAll(spcstrDir, 0755)
 	require.NoError(t, err)
-	
+
 	// Create subdirectory
 	subDir := filepath.Join(projectDir, "sub", "dir")
 	err = os.MkdirAll(subDir, 0755)
 	require.NoError(t, err)
-	
+
 	tests := []struct {
 		name      string
 		startPath string
@@ -160,11 +160,11 @@ func TestFindProjectRoot(t *testing.T) {
 			wantErr:   true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			root, err := FindProjectRoot(tt.startPath)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				assert.Empty(t, root)
@@ -187,15 +187,15 @@ func TestEnsureConfigDirs(t *testing.T) {
 
 func TestGetClaudeSettingsPath(t *testing.T) {
 	paths := GetClaudeSettingsPath()
-	
+
 	// Should return multiple paths
 	assert.NotEmpty(t, paths)
-	
+
 	// All paths should end with settings.json
 	for _, path := range paths {
 		assert.True(t, strings.HasSuffix(path, "settings.json"))
 	}
-	
+
 	// Should include platform-specific paths
 	switch runtime.GOOS {
 	case "darwin":

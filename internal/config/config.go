@@ -6,11 +6,11 @@ import (
 
 // Configuration represents the spcstr configuration structure
 type Configuration struct {
-	Version string          `json:"version"`
-	Scope   string          `json:"scope"`
-	Paths   PathConfig      `json:"paths"`
-	UI      UIConfig        `json:"ui"`
-	Session SessionConfig   `json:"session"`
+	Version string        `json:"version"`
+	Scope   string        `json:"scope"`
+	Paths   PathConfig    `json:"paths"`
+	UI      UIConfig      `json:"ui"`
+	Session SessionConfig `json:"session"`
 }
 
 // PathConfig defines path-related configuration
@@ -70,7 +70,7 @@ func (c *Configuration) Merge(other *Configuration) {
 	}
 
 	// Version is not merged, it's always from the base config
-	
+
 	// Merge Paths
 	if other.Paths.Hooks != "" {
 		c.Paths.Hooks = other.Paths.Hooks
@@ -109,7 +109,7 @@ func (c *Configuration) IsExpired(sessionTime time.Time) bool {
 	if c.Session.RetentionDays <= 0 {
 		return false // No expiration if retention days is 0 or negative
 	}
-	
+
 	expirationTime := sessionTime.Add(time.Duration(c.Session.RetentionDays) * 24 * time.Hour)
 	return time.Now().After(expirationTime)
 }

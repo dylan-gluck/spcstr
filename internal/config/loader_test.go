@@ -94,12 +94,12 @@ func TestLoadConfigFromReader(t *testing.T) {
 			wantErr: false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			reader := strings.NewReader(tt.input)
 			got, err := LoadConfigFromReader(reader)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				assert.Nil(t, got)
@@ -143,12 +143,12 @@ func TestSaveConfigToWriter(t *testing.T) {
 `,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
 			err := SaveConfigToWriter(&buf, tt.cfg)
-			
+
 			assert.NoError(t, err)
 			assert.JSONEq(t, tt.want, buf.String())
 		})
@@ -158,17 +158,17 @@ func TestSaveConfigToWriter(t *testing.T) {
 func TestLoadConfig(t *testing.T) {
 	// Create temp directory for test
 	tmpDir := t.TempDir()
-	
+
 	// Test loading existing config
 	configPath := filepath.Join(tmpDir, "config.json")
 	cfg := DefaultConfig()
 	err := SaveConfig(configPath, cfg)
 	require.NoError(t, err)
-	
+
 	loaded, err := LoadConfig(configPath)
 	assert.NoError(t, err)
 	assert.Equal(t, cfg, loaded)
-	
+
 	// Test loading non-existent file
 	nonExistentPath := filepath.Join(tmpDir, "nonexistent.json")
 	_, err = LoadConfig(nonExistentPath)
@@ -177,7 +177,7 @@ func TestLoadConfig(t *testing.T) {
 
 func TestSaveConfig(t *testing.T) {
 	tmpDir := t.TempDir()
-	
+
 	tests := []struct {
 		name    string
 		path    string
@@ -203,21 +203,21 @@ func TestSaveConfig(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := SaveConfig(tt.path, tt.cfg)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
-				
+
 				// Verify file exists and has correct permissions
 				info, err := os.Stat(tt.path)
 				assert.NoError(t, err)
 				assert.Equal(t, os.FileMode(0644), info.Mode().Perm())
-				
+
 				// Verify content
 				loaded, err := LoadConfig(tt.path)
 				assert.NoError(t, err)
@@ -229,16 +229,16 @@ func TestSaveConfig(t *testing.T) {
 
 func TestConfigExists(t *testing.T) {
 	tmpDir := t.TempDir()
-	
+
 	// Test non-existent file
 	nonExistentPath := filepath.Join(tmpDir, "nonexistent.json")
 	assert.False(t, ConfigExists(nonExistentPath))
-	
+
 	// Create a file
 	existingPath := filepath.Join(tmpDir, "existing.json")
 	err := SaveConfig(existingPath, DefaultConfig())
 	require.NoError(t, err)
-	
+
 	// Test existing file
 	assert.True(t, ConfigExists(existingPath))
 }
@@ -283,7 +283,7 @@ func TestMergeConfigs(t *testing.T) {
 				&Configuration{
 					Session: SessionConfig{
 						RetentionDays: 60,
-						AutoArchive: true, // Explicitly set to match expected
+						AutoArchive:   true, // Explicitly set to match expected
 					},
 				},
 			},
@@ -296,7 +296,7 @@ func TestMergeConfigs(t *testing.T) {
 			}(),
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := MergeConfigs(tt.configs...)
@@ -307,19 +307,19 @@ func TestMergeConfigs(t *testing.T) {
 
 func TestLoadOrCreateConfig(t *testing.T) {
 	tmpDir := t.TempDir()
-	
+
 	// Test creating new config
 	newPath := filepath.Join(tmpDir, "new.json")
 	cfg, err := LoadOrCreateConfig(newPath)
 	assert.NoError(t, err)
 	assert.Equal(t, DefaultConfig(), cfg)
 	assert.True(t, ConfigExists(newPath))
-	
+
 	// Test loading existing config
 	cfg.UI.Theme = "light"
 	err = SaveConfig(newPath, cfg)
 	require.NoError(t, err)
-	
+
 	loaded, err := LoadOrCreateConfig(newPath)
 	assert.NoError(t, err)
 	assert.Equal(t, cfg, loaded)

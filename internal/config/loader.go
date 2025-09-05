@@ -49,7 +49,7 @@ func SaveConfig(path string, cfg *Configuration) error {
 	if err != nil {
 		return fmt.Errorf("creating temp config file: %w", err)
 	}
-	
+
 	// Ensure temp file is removed on error
 	defer func() {
 		if err != nil {

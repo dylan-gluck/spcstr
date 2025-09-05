@@ -68,16 +68,17 @@ func runInit(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("saving configuration: %w", err)
 	}
 
-	// Generate hook scripts
-	fmt.Fprintln(cmd.OutOrStdout(), "Generating hook scripts...")
+	// Remove old shell hooks if they exist
 	hooksPath := filepath.Join(projectPath, "hooks")
-	generator := hooks.NewGenerator(hooksPath, projectPath)
-	if err := generator.GenerateHooks(); err != nil {
-		return fmt.Errorf("generating hooks: %w", err)
+	if _, err := os.Stat(hooksPath); err == nil {
+		fmt.Fprintln(cmd.OutOrStdout(), "Removing old shell hooks...")
+		if err := os.RemoveAll(hooksPath); err != nil {
+			fmt.Fprintf(cmd.OutOrStdout(), "Warning: Could not remove old hooks: %v\n", err)
+		}
 	}
 
-	// Update Claude settings
-	fmt.Fprintln(cmd.OutOrStdout(), "Updating Claude Code settings...")
+	// Update Claude settings with Go hooks
+	fmt.Fprintln(cmd.OutOrStdout(), "Configuring Claude Code hooks...")
 	updater := hooks.NewClaudeUpdater()
 	if err := updater.UpdateClaudeSettings(hooksPath, forceInit); err != nil {
 		// Non-fatal error - Claude settings update is optional
@@ -92,7 +93,7 @@ func runInit(cmd *cobra.Command, args []string) error {
 	fmt.Fprintln(cmd.OutOrStdout(), "Created:")
 	fmt.Fprintf(cmd.OutOrStdout(), "  📁 .spcstr/              - Project configuration directory\n")
 	fmt.Fprintf(cmd.OutOrStdout(), "  📄 .spcstr/config.json   - Configuration file\n")
-	fmt.Fprintf(cmd.OutOrStdout(), "  🪝 .spcstr/hooks/        - Hook scripts\n")
+	fmt.Fprintf(cmd.OutOrStdout(), "  🪝 Claude hooks          - Integrated Go hook handlers\n")
 	fmt.Fprintf(cmd.OutOrStdout(), "  💾 .spcstr/sessions/     - Session data storage\n")
 	fmt.Fprintf(cmd.OutOrStdout(), "  📦 .spcstr/cache/        - Application cache\n")
 	fmt.Fprintf(cmd.OutOrStdout(), "  📝 .spcstr/logs/         - Log files\n")
@@ -112,7 +113,6 @@ func createDirectoryStructure(basePath string) error {
 		filepath.Join(basePath, "sessions"),
 		filepath.Join(basePath, "sessions", "active"),
 		filepath.Join(basePath, "sessions", "archive"),
-		filepath.Join(basePath, "hooks"),
 		filepath.Join(basePath, "cache"),
 		filepath.Join(basePath, "logs"),
 	}

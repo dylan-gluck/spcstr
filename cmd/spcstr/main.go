@@ -8,6 +8,12 @@ import (
 )
 
 func main() {
+	// Check if this is a hook invocation
+	if len(os.Args) >= 3 && os.Args[1] == "hook" {
+		exitCode := runHook(os.Args[2])
+		os.Exit(exitCode)
+	}
+
 	// Set up structured logging
 	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
 		Level: slog.LevelInfo,

@@ -24,7 +24,7 @@ func TestClaudeSettings_MarshalJSON(t *testing.T) {
 					"PostToolUse": "/path/to/post-command.sh",
 				},
 				Other: map[string]interface{}{
-					"theme": "dark",
+					"theme":    "dark",
 					"fontSize": 14,
 				},
 			},
@@ -58,7 +58,7 @@ func TestClaudeSettings_MarshalJSON(t *testing.T) {
 			want: `{}`,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			data, err := json.Marshal(tt.settings)
@@ -128,12 +128,12 @@ func TestClaudeSettings_UnmarshalJSON(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var settings ClaudeSettings
 			err := json.Unmarshal([]byte(tt.input), &settings)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -153,7 +153,7 @@ func TestNewClaudeUpdater(t *testing.T) {
 func TestClaudeUpdater_loadSettings(t *testing.T) {
 	tmpDir := t.TempDir()
 	updater := NewClaudeUpdater()
-	
+
 	// Test loading non-existent file
 	nonExistentPath := filepath.Join(tmpDir, "nonexistent.json")
 	settings, err := updater.loadSettings(nonExistentPath)
@@ -161,7 +161,7 @@ func TestClaudeUpdater_loadSettings(t *testing.T) {
 	assert.NotNil(t, settings)
 	assert.Empty(t, settings.Hooks)
 	assert.Empty(t, settings.Other)
-	
+
 	// Test loading existing file
 	existingPath := filepath.Join(tmpDir, "settings.json")
 	testSettings := &ClaudeSettings{
@@ -172,11 +172,11 @@ func TestClaudeUpdater_loadSettings(t *testing.T) {
 			"theme": "dark",
 		},
 	}
-	
+
 	// Save test settings
 	err = updater.saveSettings(existingPath, testSettings)
 	require.NoError(t, err)
-	
+
 	// Load and verify
 	loaded, err := updater.loadSettings(existingPath)
 	assert.NoError(t, err)
@@ -187,7 +187,7 @@ func TestClaudeUpdater_loadSettings(t *testing.T) {
 func TestClaudeUpdater_saveSettings(t *testing.T) {
 	tmpDir := t.TempDir()
 	updater := NewClaudeUpdater()
-	
+
 	settingsPath := filepath.Join(tmpDir, "subdir", "settings.json")
 	settings := &ClaudeSettings{
 		Hooks: map[string]interface{}{
@@ -201,16 +201,16 @@ func TestClaudeUpdater_saveSettings(t *testing.T) {
 			"fontSize": float64(14),
 		},
 	}
-	
+
 	// Save settings
 	err := updater.saveSettings(settingsPath, settings)
 	assert.NoError(t, err)
-	
+
 	// Verify file exists with correct permissions
 	info, err := os.Stat(settingsPath)
 	require.NoError(t, err)
 	assert.Equal(t, os.FileMode(0644), info.Mode().Perm())
-	
+
 	// Verify content
 	loaded, err := updater.loadSettings(settingsPath)
 	assert.NoError(t, err)
@@ -220,23 +220,23 @@ func TestClaudeUpdater_saveSettings(t *testing.T) {
 func TestClaudeUpdater_createBackup(t *testing.T) {
 	tmpDir := t.TempDir()
 	updater := NewClaudeUpdater()
-	
+
 	// Create original file
 	originalPath := filepath.Join(tmpDir, "original.json")
 	originalContent := []byte(`{"test": "data"}`)
 	err := os.WriteFile(originalPath, originalContent, 0644)
 	require.NoError(t, err)
-	
+
 	// Create backup
 	backupPath := filepath.Join(tmpDir, "backup.json")
 	err = updater.createBackup(originalPath, backupPath)
 	assert.NoError(t, err)
-	
+
 	// Verify backup content
 	backupContent, err := os.ReadFile(backupPath)
 	assert.NoError(t, err)
 	assert.Equal(t, originalContent, backupContent)
-	
+
 	// Test backup of non-existent file
 	err = updater.createBackup(filepath.Join(tmpDir, "nonexistent.json"), backupPath)
 	assert.NoError(t, err) // Should not error for non-existent source
@@ -245,23 +245,23 @@ func TestClaudeUpdater_createBackup(t *testing.T) {
 func TestClaudeUpdater_restoreBackup(t *testing.T) {
 	tmpDir := t.TempDir()
 	updater := NewClaudeUpdater()
-	
+
 	// Create backup file
 	backupPath := filepath.Join(tmpDir, "backup.json")
 	backupContent := []byte(`{"backup": true}`)
 	err := os.WriteFile(backupPath, backupContent, 0644)
 	require.NoError(t, err)
-	
+
 	// Restore backup
 	targetPath := filepath.Join(tmpDir, "restored.json")
 	err = updater.restoreBackup(backupPath, targetPath)
 	assert.NoError(t, err)
-	
+
 	// Verify restored content
 	restoredContent, err := os.ReadFile(targetPath)
 	assert.NoError(t, err)
 	assert.Equal(t, backupContent, restoredContent)
-	
+
 	// Verify backup file no longer exists
 	_, err = os.Stat(backupPath)
 	assert.True(t, os.IsNotExist(err))
@@ -270,12 +270,12 @@ func TestClaudeUpdater_restoreBackup(t *testing.T) {
 func TestClaudeUpdater_UpdateClaudeSettings(t *testing.T) {
 	tmpDir := t.TempDir()
 	updater := NewClaudeUpdater()
-	
+
 	// Create mock settings file
 	settingsDir := filepath.Join(tmpDir, ".claude")
 	err := os.MkdirAll(settingsDir, 0755)
 	require.NoError(t, err)
-	
+
 	settingsPath := filepath.Join(settingsDir, "settings.json")
 	initialSettings := &ClaudeSettings{
 		Hooks: map[string]interface{}{},
@@ -285,25 +285,25 @@ func TestClaudeUpdater_UpdateClaudeSettings(t *testing.T) {
 	}
 	err = updater.saveSettings(settingsPath, initialSettings)
 	require.NoError(t, err)
-	
+
 	// Mock the findClaudeSettings method to return our test path
 	// Since we can't easily mock this, we'll test the core logic through other methods
-	
+
 	// Test that hooks are added correctly
 	hooksPath := filepath.Join(tmpDir, "hooks")
-	
+
 	// Load settings, update hooks, and save
 	settings, err := updater.loadSettings(settingsPath)
 	require.NoError(t, err)
-	
+
 	settings.Hooks["PreToolUse"] = filepath.Join(hooksPath, "pre-command.sh")
 	settings.Hooks["PostToolUse"] = filepath.Join(hooksPath, "post-command.sh")
 	settings.Hooks["Notification"] = filepath.Join(hooksPath, "file-modified.sh")
 	settings.Hooks["SessionEnd"] = filepath.Join(hooksPath, "session-end.sh")
-	
+
 	err = updater.saveSettings(settingsPath, settings)
 	assert.NoError(t, err)
-	
+
 	// Verify hooks were added
 	loaded, err := updater.loadSettings(settingsPath)
 	assert.NoError(t, err)
@@ -315,7 +315,7 @@ func TestClaudeUpdater_UpdateClaudeSettings(t *testing.T) {
 func TestClaudeUpdater_RemoveHooks(t *testing.T) {
 	tmpDir := t.TempDir()
 	updater := NewClaudeUpdater()
-	
+
 	// Create settings with hooks
 	settingsPath := filepath.Join(tmpDir, "settings.json")
 	settings := &ClaudeSettings{
@@ -332,19 +332,19 @@ func TestClaudeUpdater_RemoveHooks(t *testing.T) {
 	}
 	err := updater.saveSettings(settingsPath, settings)
 	require.NoError(t, err)
-	
+
 	// Remove spcstr hooks
 	loaded, err := updater.loadSettings(settingsPath)
 	require.NoError(t, err)
-	
+
 	delete(loaded.Hooks, "PreToolUse")
 	delete(loaded.Hooks, "PostToolUse")
 	delete(loaded.Hooks, "Notification")
 	delete(loaded.Hooks, "SessionEnd")
-	
+
 	err = updater.saveSettings(settingsPath, loaded)
 	assert.NoError(t, err)
-	
+
 	// Verify only custom hook remains
 	final, err := updater.loadSettings(settingsPath)
 	assert.NoError(t, err)

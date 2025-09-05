@@ -49,7 +49,7 @@ func isValidVersion(version string) bool {
 	if len(parts) != 3 {
 		return false
 	}
-	
+
 	for _, part := range parts {
 		if part == "" {
 			return false
@@ -96,12 +96,12 @@ func isValidPath(path string) bool {
 	if path == "" {
 		return false
 	}
-	
+
 	// Check for dangerous path patterns
 	if strings.Contains(path, "..") {
 		return false // No parent directory traversal
 	}
-	
+
 	// Clean the path and check if it's valid
 	cleaned := filepath.Clean(path)
 	// Allow original path, cleaned path, or paths with trailing slash

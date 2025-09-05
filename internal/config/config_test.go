@@ -9,7 +9,7 @@ import (
 
 func TestDefaultConfig(t *testing.T) {
 	cfg := DefaultConfig()
-	
+
 	assert.NotNil(t, cfg)
 	assert.Equal(t, "1.0.0", cfg.Version)
 	assert.Equal(t, "project", cfg.Scope)
@@ -25,7 +25,7 @@ func TestDefaultConfig(t *testing.T) {
 
 func TestGlobalConfig(t *testing.T) {
 	cfg := GlobalConfig()
-	
+
 	assert.NotNil(t, cfg)
 	assert.Equal(t, "global", cfg.Scope)
 	// Other fields should match defaults
@@ -40,9 +40,9 @@ func TestConfiguration_Merge(t *testing.T) {
 		expected *Configuration
 	}{
 		{
-			name: "merge with nil",
-			base: DefaultConfig(),
-			other: nil,
+			name:     "merge with nil",
+			base:     DefaultConfig(),
+			other:    nil,
 			expected: DefaultConfig(),
 		},
 		{
@@ -132,7 +132,7 @@ func TestConfiguration_Merge(t *testing.T) {
 			}(),
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.base.Merge(tt.other)
@@ -147,7 +147,7 @@ func TestConfiguration_IsExpired(t *testing.T) {
 			RetentionDays: 30,
 		},
 	}
-	
+
 	tests := []struct {
 		name        string
 		sessionTime time.Time
@@ -185,7 +185,7 @@ func TestConfiguration_IsExpired(t *testing.T) {
 			expected:    false,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cfg.Session.RetentionDays = tt.retention

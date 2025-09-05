@@ -22,12 +22,12 @@ func (cs *ClaudeSettings) MarshalJSON() ([]byte, error) {
 	for k, v := range cs.Other {
 		result[k] = v
 	}
-	
+
 	// Add hooks if present
 	if len(cs.Hooks) > 0 {
 		result["hooks"] = cs.Hooks
 	}
-	
+
 	return json.Marshal(result)
 }
 
@@ -38,7 +38,7 @@ func (cs *ClaudeSettings) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return err
 	}
-	
+
 	// Extract hooks if present
 	if hooks, ok := raw["hooks"]; ok {
 		if hooksMap, ok := hooks.(map[string]interface{}); ok {
@@ -50,7 +50,7 @@ func (cs *ClaudeSettings) UnmarshalJSON(data []byte) error {
 	} else {
 		cs.Hooks = make(map[string]interface{})
 	}
-	
+
 	// Store remaining fields
 	cs.Other = raw
 	return nil
@@ -69,13 +69,13 @@ func (cu *ClaudeUpdater) UpdateClaudeSettings(hooksPath string, force bool) erro
 	// Extract project directory from hooks path
 	// hooksPath is like "/path/to/project/.spcstr/hooks"
 	projectDir := filepath.Dir(filepath.Dir(hooksPath))
-	
+
 	// Find Claude settings file in project directory
 	settingsPath, err := cu.findClaudeSettings(projectDir)
 	if err != nil {
 		return fmt.Errorf("finding Claude settings: %w", err)
 	}
-	
+
 	if settingsPath == "" {
 		return fmt.Errorf("Claude settings.json not found")
 	}
@@ -106,49 +106,115 @@ func (cu *ClaudeUpdater) UpdateClaudeSettings(hooksPath string, force bool) erro
 	if settings.Hooks == nil {
 		settings.Hooks = make(map[string]interface{})
 	}
-	
-	// Create proper Claude Code hook format using $CLAUDE_PROJECT_DIR
+
+	// Create proper Claude Code hook format using Go hook commands
 	settings.Hooks["PreToolUse"] = []map[string]interface{}{
 		{
 			"matcher": "*",
 			"hooks": []map[string]interface{}{
 				{
 					"type":    "command",
-					"command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/pre-command.sh",
+					"command": "spcstr hook pre_tool_use",
 				},
 			},
 		},
 	}
-	
+
 	settings.Hooks["PostToolUse"] = []map[string]interface{}{
 		{
-			"matcher": "*", 
+			"matcher": "*",
 			"hooks": []map[string]interface{}{
 				{
 					"type":    "command",
-					"command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/post-command.sh",
+					"command": "spcstr hook post_tool_use",
 				},
 			},
 		},
 	}
-	
-	settings.Hooks["Notification"] = []map[string]interface{}{
+
+	settings.Hooks["SessionStart"] = []map[string]interface{}{
 		{
 			"hooks": []map[string]interface{}{
 				{
 					"type":    "command",
-					"command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/file-modified.sh",
+					"command": "spcstr hook session_start",
 				},
 			},
 		},
 	}
-	
+
 	settings.Hooks["SessionEnd"] = []map[string]interface{}{
 		{
 			"hooks": []map[string]interface{}{
 				{
 					"type":    "command",
-					"command": "$CLAUDE_PROJECT_DIR/.spcstr/hooks/session-end.sh",
+					"command": "spcstr hook session_end",
+				},
+			},
+		},
+	}
+
+	settings.Hooks["UserPromptSubmit"] = []map[string]interface{}{
+		{
+			"hooks": []map[string]interface{}{
+				{
+					"type":    "command",
+					"command": "spcstr hook user_prompt_submit",
+				},
+			},
+		},
+	}
+
+	settings.Hooks["Notification"] = []map[string]interface{}{
+		{
+			"hooks": []map[string]interface{}{
+				{
+					"type":    "command",
+					"command": "spcstr hook notification",
+				},
+			},
+		},
+	}
+
+	settings.Hooks["Stop"] = []map[string]interface{}{
+		{
+			"hooks": []map[string]interface{}{
+				{
+					"type":    "command",
+					"command": "spcstr hook stop",
+				},
+			},
+		},
+	}
+
+	settings.Hooks["SubagentStart"] = []map[string]interface{}{
+		{
+			"hooks": []map[string]interface{}{
+				{
+					"type":    "command",
+					"command": "spcstr hook subagent_start",
+				},
+			},
+		},
+	}
+
+	settings.Hooks["SubagentStop"] = []map[string]interface{}{
+		{
+			"hooks": []map[string]interface{}{
+				{
+					"type":    "command",
+					"command": "spcstr hook subagent_stop",
+				},
+			},
+		},
+	}
+
+	settings.Hooks["PreCompact"] = []map[string]interface{}{
+		{
+			"hooks": []map[string]interface{}{
+				{
+					"type":    "command",
+					"command": "spcstr hook pre_compact",
 				},
 			},
 		},
@@ -171,12 +237,12 @@ func (cu *ClaudeUpdater) RemoveHooks() error {
 	if err != nil {
 		return fmt.Errorf("getting current directory: %w", err)
 	}
-	
+
 	settingsPath, err := cu.findClaudeSettings(cwd)
 	if err != nil {
 		return fmt.Errorf("finding Claude settings: %w", err)
 	}
-	
+
 	if settingsPath == "" {
 		return nil // No settings file, nothing to remove
 	}
@@ -186,11 +252,17 @@ func (cu *ClaudeUpdater) RemoveHooks() error {
 		return fmt.Errorf("loading settings: %w", err)
 	}
 
-	// Remove spcstr hooks
+	// Remove all spcstr hooks
 	delete(settings.Hooks, "PreToolUse")
 	delete(settings.Hooks, "PostToolUse")
-	delete(settings.Hooks, "Notification")
+	delete(settings.Hooks, "SessionStart")
 	delete(settings.Hooks, "SessionEnd")
+	delete(settings.Hooks, "UserPromptSubmit")
+	delete(settings.Hooks, "Notification")
+	delete(settings.Hooks, "Stop")
+	delete(settings.Hooks, "SubagentStart")
+	delete(settings.Hooks, "SubagentStop")
+	delete(settings.Hooks, "PreCompact")
 
 	// Save updated settings
 	return cu.saveSettings(settingsPath, settings)
@@ -200,18 +272,18 @@ func (cu *ClaudeUpdater) RemoveHooks() error {
 func (cu *ClaudeUpdater) findClaudeSettings(projectDir string) (string, error) {
 	// Look for .claude/settings.json in the project directory
 	settingsPath := filepath.Join(projectDir, ".claude", "settings.json")
-	
+
 	// Check if it exists
 	if _, err := os.Stat(settingsPath); err == nil {
 		return settingsPath, nil
 	}
-	
+
 	// Try to create it if it doesn't exist
 	claudeDir := filepath.Join(projectDir, ".claude")
 	if err := os.MkdirAll(claudeDir, 0755); err != nil {
 		return "", fmt.Errorf("creating .claude directory: %w", err)
 	}
-	
+
 	// Create empty settings file
 	settings := &ClaudeSettings{
 		Hooks: make(map[string]interface{}),
@@ -220,7 +292,7 @@ func (cu *ClaudeUpdater) findClaudeSettings(projectDir string) (string, error) {
 	if err := cu.saveSettings(settingsPath, settings); err != nil {
 		return "", fmt.Errorf("creating settings file: %w", err)
 	}
-	
+
 	return settingsPath, nil
 }
 
