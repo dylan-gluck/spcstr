@@ -54,11 +54,16 @@ func New() *App {
 func (a *App) Init() tea.Cmd {
 	a.checkInitialization()
 
+	var cmds []tea.Cmd
+	cmds = append(cmds, tea.EnterAltScreen)
+	
 	if a.state.initialized {
-		a.initializeViews()
+		if cmd := a.initializeViews(); cmd != nil {
+			cmds = append(cmds, cmd)
+		}
 	}
 
-	return tea.EnterAltScreen
+	return tea.Batch(cmds...)
 }
 
 func (a *App) checkInitialization() {
@@ -74,7 +79,9 @@ func (a *App) checkInitialization() {
 	}
 }
 
-func (a *App) initializeViews() {
+func (a *App) initializeViews() tea.Cmd {
+	var cmds []tea.Cmd
+	
 	// Initialize header with size
 	headerModel := header.New()
 	headerModel.SetSessionStatus("active")
@@ -94,15 +101,23 @@ func (a *App) initializeViews() {
 	// Initialize views with size
 	planModel := plan.New()
 	if a.state.windowWidth > 0 {
-		planModel.Update(tea.WindowSizeMsg{Width: a.state.windowWidth, Height: a.state.windowHeight})
+		updatedModel, _ := planModel.Update(tea.WindowSizeMsg{Width: a.state.windowWidth, Height: a.state.windowHeight})
+		planModel = updatedModel.(plan.Model)
+	}
+	// Get the init command from the plan view
+	if cmd := planModel.Init(); cmd != nil {
+		cmds = append(cmds, cmd)
 	}
 	a.state.planView = planModel
 
 	observeModel := observe.New()
 	if a.state.windowWidth > 0 {
-		observeModel.Update(tea.WindowSizeMsg{Width: a.state.windowWidth, Height: a.state.windowHeight})
+		updatedObserve, _ := observeModel.Update(tea.WindowSizeMsg{Width: a.state.windowWidth, Height: a.state.windowHeight})
+		observeModel = updatedObserve.(observe.Model)
 	}
 	a.state.observeView = observeModel
+	
+	return tea.Batch(cmds...)
 }
 
 func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -112,11 +127,13 @@ func (a *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		a.state.windowHeight = msg.Height
 
 		// Initialize views on first size message if not already done
+		var initCmd tea.Cmd
 		if a.state.initialized && a.state.header == nil {
-			a.initializeViews()
+			initCmd = a.initializeViews()
 		}
 
-		return a, a.propagateSizeUpdate(msg)
+		propagateCmd := a.propagateSizeUpdate(msg)
+		return a, tea.Batch(initCmd, propagateCmd)
 
 	case tea.KeyMsg:
 		return a.handleGlobalKeys(msg)
@@ -177,22 +194,26 @@ func (a *App) propagateSizeUpdate(msg tea.WindowSizeMsg) tea.Cmd {
 	var cmds []tea.Cmd
 
 	if a.state.header != nil {
-		_, cmd := a.state.header.Update(msg)
+		updated, cmd := a.state.header.Update(msg)
+		a.state.header = updated
 		cmds = append(cmds, cmd)
 	}
 
 	if a.state.footer != nil {
-		_, cmd := a.state.footer.Update(msg)
+		updated, cmd := a.state.footer.Update(msg)
+		a.state.footer = updated
 		cmds = append(cmds, cmd)
 	}
 
 	if a.state.planView != nil && a.state.currentView == ViewPlan {
-		_, cmd := a.state.planView.Update(msg)
+		updated, cmd := a.state.planView.Update(msg)
+		a.state.planView = updated
 		cmds = append(cmds, cmd)
 	}
 
 	if a.state.observeView != nil && a.state.currentView == ViewObserve {
-		_, cmd := a.state.observeView.Update(msg)
+		updated, cmd := a.state.observeView.Update(msg)
+		a.state.observeView = updated
 		cmds = append(cmds, cmd)
 	}
 

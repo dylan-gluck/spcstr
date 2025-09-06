@@ -1,0 +1,27 @@
+{
+  "session_id": "ada94725-6275-4ec7-8cbd-0b538fc77e9f",
+  "created_at": "2025-09-06T03:33:46.897694Z",
+  "updated_at": "2025-09-06T03:34:49.50894Z",
+  "session_active": false,
+  "agents": [],
+  "agents_history": [],
+  "files": {
+    "new": [],
+    "edited": [],
+    "read": []
+  },
+  "tools_used": {
+    "Bash": 6,
+    "Read": 3
+  },
+  "errors": [],
+  "prompts": [
+    {
+      "timestamp": "2025-09-05T23:33:50.248171-04:00",
+      "prompt": "/BMad:agents:sm ",
+      "response": "",
+      "tools_used": []
+    }
+  ],
+  "notifications": []
+}

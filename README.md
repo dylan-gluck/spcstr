@@ -2,8 +2,6 @@
 
 Multi-agent observability for Claude Code sessions. Track agent activities, file operations, and task progress in real-time through an intuitive TUI.
 
-*Pre-release - NOT Available via Homebrew*
-
 ## Features
 
 - **Automatic Session Tracking** - Transparent hook-based monitoring of Claude Code sessions
@@ -13,12 +11,6 @@ Multi-agent observability for Claude Code sessions. Track agent activities, file
 - **Privacy First** - All data stored locally, no network calls
 
 ## Installation
-
-### Homebrew (macOS/Linux)
-```bash
-brew update
-brew install spcstr
-```
 
 ### From Source
 ```bash

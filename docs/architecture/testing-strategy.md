@@ -186,3 +186,103 @@ func TestObserveDashboard(t *testing.T) {
     }
 }
 ```
+
+## TUI Testing Best Practices (Lessons Learned)
+
+### Layout Testing Patterns
+
+#### 1. Test Multiple Terminal Sizes
+```go
+func TestLayoutResponsiveness(t *testing.T) {
+    testCases := []struct {
+        name   string
+        width  int
+        height int
+    }{
+        {"Small terminal", 80, 24},
+        {"Medium terminal", 120, 40},
+        {"Large terminal", 200, 60},
+        {"Very narrow", 50, 30},
+        {"Very wide", 300, 50},
+    }
+    
+    for _, tc := range testCases {
+        t.Run(tc.name, func(t *testing.T) {
+            model := NewModel()
+            model, _ = model.Update(tea.WindowSizeMsg{
+                Width:  tc.width,
+                Height: tc.height,
+            })
+            
+            view := model.View()
+            // Verify view doesn't panic and renders something
+            if tc.width > 0 && tc.height > 0 && view == "" {
+                t.Error("View should render with valid dimensions")
+            }
+        })
+    }
+}
+```
+
+#### 2. Test Init() and Update() Separately
+```go
+// ❌ BAD: Mixing Init and Update in tests
+_, cmd := model.Update(tea.WindowSizeMsg{Width: 120, Height: 40})
+if cmd == nil {
+    t.Error("Should return command") // Confusing!
+}
+
+// ✅ GOOD: Test Init and Update separately
+initCmd := model.Init()
+if initCmd == nil {
+    t.Error("Init should return initial load command")
+}
+
+updatedModel, _ := model.Update(tea.WindowSizeMsg{Width: 120, Height: 40})
+model = updatedModel.(plan.Model)
+```
+
+#### 3. Avoid Testing Internal Layout Details
+```go
+// ❌ BAD: Testing exact pixel calculations
+if leftPaneWidth != 35 {
+    t.Error("Left pane should be exactly 35 chars")
+}
+
+// ✅ GOOD: Test behavior, not implementation
+view := model.View()
+if !strings.Contains(view, expectedContent) {
+    t.Error("View should display expected content")
+}
+```
+
+### Common TUI Testing Pitfalls
+
+1. **TTY Dependencies:** TUI tests often fail in CI due to missing TTY
+   - Solution: Mock the terminal or test components separately
+   
+2. **ANSI Code Handling:** Raw view output contains ANSI escape sequences
+   - Solution: Strip ANSI codes or test for content presence
+   
+3. **Timing Issues:** File watching and async operations can be flaky
+   - Solution: Use deterministic test patterns, avoid sleep()
+
+### Recommended Test Structure
+```go
+func TestTUIComponent(t *testing.T) {
+    // 1. Setup: Create model with test data
+    model := NewModel()
+    
+    // 2. Initialize: Call Init() if testing initial state
+    if cmd := model.Init(); cmd != nil {
+        // Process initial command if needed
+    }
+    
+    // 3. Update: Send test messages
+    model, _ = model.Update(testMsg)
+    
+    // 4. Assert: Check view output or state
+    view := model.View()
+    // Test for expected content, not exact formatting
+}
+```

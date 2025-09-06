@@ -23,17 +23,23 @@ internal/tui/
 
 ### Component Template
 ```go
-// Standard Bubbletea component pattern
+// Standard Bubbletea component pattern with lessons learned
 type Component struct {
     width  int
     height int
-    styles lipgloss.Style
+    styles ComponentStyles  // Use structured styles, not single style
     // Component-specific fields
+}
+
+type ComponentStyles struct {
+    Container      lipgloss.Style
+    FocusedBorder  lipgloss.Style
+    UnfocusedBorder lipgloss.Style
 }
 
 func NewComponent() Component {
     return Component{
-        styles: styles.DefaultComponent(),
+        styles: createComponentStyles(theme),
     }
 }
 
@@ -45,7 +51,7 @@ func (c Component) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
     switch msg := msg.(type) {
     case tea.WindowSizeMsg:
         c.width = msg.Width
-        c.height = msg.Height
+        c.height = msg.Height - 3  // Account for header/footer
     case tea.KeyMsg:
         return c.handleKeys(msg)
     }
@@ -53,7 +59,17 @@ func (c Component) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (c Component) View() string {
-    return c.styles.Render("Component content")
+    if c.width == 0 || c.height == 0 {
+        return ""  // Don't render without dimensions
+    }
+    
+    // LESSON LEARNED: Use MaxWidth/MaxHeight to prevent overflow
+    return c.styles.Container.
+        Width(c.width).
+        Height(c.height).
+        MaxWidth(c.width).    // Critical for preventing overflow
+        MaxHeight(c.height).  // Critical for preventing overflow
+        Render("Component content")
 }
 ```
 
@@ -190,5 +206,104 @@ func (s *StateService) LoadSessionDetails(id string) tea.Cmd {
         }
         return SessionDetailMsg{Session: session}
     }
+}
+```
+
+## Layout Best Practices (Lessons Learned)
+
+### Critical Layout Patterns
+
+#### 1. Simple Division Over Complex Calculations
+```go
+// ❌ BAD: Complex percentage calculations with conditionals
+leftPaneWidth := (m.width * 30) / 100
+if leftPaneWidth < 20 {
+    leftPaneWidth = 20
+}
+rightPaneWidth := m.width - leftPaneWidth - 2
+if rightPaneWidth < 40 {
+    rightPaneWidth = 40
+}
+
+// ✅ GOOD: Simple division
+leftPaneWidth := (m.width / 3) - 4  // Account for borders/padding
+rightPaneWidth := m.width - (m.width / 3) - 4
+```
+
+#### 2. Always Use MaxWidth/MaxHeight
+```go
+// ❌ BAD: Only setting Width/Height
+return style.
+    Width(width).
+    Height(height).
+    Render(content)
+
+// ✅ GOOD: MaxWidth/MaxHeight prevent overflow
+return style.
+    Width(width).
+    Height(height).
+    MaxWidth(width).    // CRITICAL: Prevents horizontal overflow
+    MaxHeight(height).  // CRITICAL: Prevents vertical overflow
+    Render(content)
+```
+
+#### 3. Account for Chrome in Calculations
+```go
+// ❌ BAD: Using raw terminal dimensions
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+    case tea.WindowSizeMsg:
+        m.width = msg.Width
+        m.height = msg.Height
+
+// ✅ GOOD: Account for UI chrome
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+    case tea.WindowSizeMsg:
+        m.width = msg.Width
+        m.height = msg.Height - 3  // Account for header/footer
+```
+
+#### 4. Use lipgloss.Place for Complex Layouts
+```go
+// For complex content positioning, use lipgloss.Place
+content := lipgloss.Place(
+    width, 
+    height,
+    lipgloss.Left,    // horizontal alignment
+    lipgloss.Top,     // vertical alignment  
+    renderedContent,
+)
+```
+
+### Common Pitfalls to Avoid
+
+1. **Don't Fight lipgloss:** Work with its layout system, not against it
+2. **Avoid Manual Pixel Counting:** Let lipgloss handle border/padding calculations
+3. **No Complex Minimum Checks:** Simple divisions work better than conditional minimums
+4. **Test Multiple Terminal Sizes:** Always test with 80x24, 120x40, and edge cases
+
+### Recommended Pane Layout Pattern
+```go
+func (m Model) View() string {
+    if m.width == 0 || m.height == 0 {
+        return ""
+    }
+    
+    // Simple division for multi-pane layouts
+    leftPaneWidth := (m.width / 3) - 4  // 1/3 for list
+    rightPaneWidth := m.width - (m.width / 3) - 4  // 2/3 for content
+    
+    leftPane := m.renderPane(leftPaneWidth, m.height-2, leftContent)
+    rightPane := m.renderPane(rightPaneWidth, m.height-2, rightContent)
+    
+    return lipgloss.JoinHorizontal(lipgloss.Top, leftPane, rightPane)
+}
+
+func (m Model) renderPane(width, height int, content string) string {
+    return m.paneStyle.
+        Width(width).
+        Height(height).
+        MaxWidth(width).    // Always include
+        MaxHeight(height).  // Always include
+        Render(content)
 }
 ```

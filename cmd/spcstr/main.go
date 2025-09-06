@@ -1,15 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/dylan/spcstr/internal/config"
 	"github.com/dylan/spcstr/internal/hooks"
-	"github.com/dylan/spcstr/internal/tui"
+	"github.com/dylan/spcstr/internal/tui/app"
 	"github.com/spf13/cobra"
 )
 
@@ -34,10 +34,10 @@ var rootCmd = &cobra.Command{
 	Version: Version,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// When no subcommands are provided, launch TUI
-		m := tui.NewModel()
-		p := tea.NewProgram(m, tea.WithAltScreen())
-
-		if _, err := p.Run(); err != nil {
+		application := app.New()
+		ctx := context.Background()
+		
+		if err := application.Run(ctx); err != nil {
 			return fmt.Errorf("error running TUI: %w", err)
 		}
 
