@@ -7,16 +7,13 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/dylan/spcstr/internal/hooks/events"
 	"github.com/dylan/spcstr/internal/state"
 )
 
-// SubagentStopParams defines the expected input for subagent_stop hook
-type SubagentStopParams struct {
-	SessionID string `json:"session_id"`
-	AgentName string `json:"agent_name"`
-}
-
 // SubagentStopHandler handles the subagent_stop hook
+// Reference .spcstr/logs/subagent_stop.json for event structure
+// Note: agent_name field doesn't exist in actual events
 type SubagentStopHandler struct{}
 
 // NewSubagentStopHandler creates a new SubagentStopHandler
@@ -31,7 +28,7 @@ func (h *SubagentStopHandler) Name() string {
 
 // Execute processes the subagent_stop hook
 func (h *SubagentStopHandler) Execute(input []byte) error {
-	var params SubagentStopParams
+	var params events.SubagentStopParams
 	if err := json.Unmarshal(input, &params); err != nil {
 		return fmt.Errorf("failed to parse subagent_stop parameters: %w", err)
 	}
@@ -39,12 +36,6 @@ func (h *SubagentStopHandler) Execute(input []byte) error {
 	// Validate required fields
 	if params.SessionID == "" {
 		return fmt.Errorf("session_id is required")
-	}
-	
-	// If agent_name is not provided, use a default value
-	// This handles cases where Claude Code doesn't provide the agent_name parameter
-	if params.AgentName == "" {
-		params.AgentName = "claude"
 	}
 
 	// Create StateManager using current working directory (after --cwd change)
@@ -54,11 +45,22 @@ func (h *SubagentStopHandler) Execute(input []byte) error {
 	}
 
 	stateManager := state.NewStateManager(filepath.Join(cwd, ".spcstr"))
-
-	// Complete the specified agent
 	ctx := context.Background()
-	if err := stateManager.CompleteAgent(ctx, params.SessionID, params.AgentName); err != nil {
-		return fmt.Errorf("failed to complete agent: %w", err)
+
+	// Get current state to find active agent
+	sessionState, err := stateManager.GetSessionState(ctx, params.SessionID)
+	if err != nil {
+		// Session might not exist yet, that's ok
+		return nil
+	}
+
+	// Complete the most recently added agent if any
+	if len(sessionState.Agents) > 0 {
+		if err := stateManager.CompleteAgent(ctx, params.SessionID, sessionState.Agents[0]); err != nil {
+			// Don't fail if we can't complete the agent
+			// This is an observability tool, not a blocker
+			return nil
+		}
 	}
 
 	return nil

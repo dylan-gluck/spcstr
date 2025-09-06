@@ -17,6 +17,7 @@ type SessionState struct {
 	Errors        []ErrorEntry        `json:"errors"`
 	Prompts       []PromptEntry       `json:"prompts"`
 	Notifications []NotificationEntry `json:"notifications"`
+	Todos         TodoState           `json:"todos"`
 }
 
 // AgentExecution tracks the execution lifecycle of an agent
@@ -55,4 +56,21 @@ type NotificationEntry struct {
 	Type      string    `json:"type"`
 	Message   string    `json:"message"`
 	Level     string    `json:"level"`
+}
+
+// TodoState tracks todo items and their status
+type TodoState struct {
+	Total       int        `json:"total"`
+	Pending     int        `json:"pending"`
+	InProgress  int        `json:"in_progress"`
+	Completed   int        `json:"completed"`
+	Recent      []TodoItem `json:"recent"`
+	LastUpdated string     `json:"last_updated"`
+}
+
+// TodoItem represents a single todo item
+type TodoItem struct {
+	Content    string `json:"content"`
+	Status     string `json:"status"`
+	ActiveForm string `json:"activeForm"`
 }

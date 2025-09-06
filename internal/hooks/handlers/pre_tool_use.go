@@ -7,17 +7,13 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/dylan/spcstr/internal/hooks/events"
 	"github.com/dylan/spcstr/internal/state"
 )
 
-// PreToolUseParams defines the expected input for pre_tool_use hook
-type PreToolUseParams struct {
-	SessionID string `json:"session_id"`
-	ToolName  string `json:"tool_name"`
-	AgentName string `json:"agent_name,omitempty"`
-}
-
 // PreToolUseHandler handles the pre_tool_use hook
+// Reference .spcstr/logs/pre_tool_use.json for event structure
+// Updates .spcstr/sessions/{session-id}/state.json with tool usage and agent info
 type PreToolUseHandler struct{}
 
 // NewPreToolUseHandler creates a new PreToolUseHandler
@@ -32,41 +28,38 @@ func (h *PreToolUseHandler) Name() string {
 
 // Execute processes the pre_tool_use hook
 func (h *PreToolUseHandler) Execute(input []byte) error {
-	var params PreToolUseParams
-	if err := json.Unmarshal(input, &params); err != nil {
-		return fmt.Errorf("failed to parse pre_tool_use parameters: %w", err)
+	var event events.ClaudeEvent
+	if err := json.Unmarshal(input, &event); err != nil {
+		return fmt.Errorf("failed to parse event: %w", err)
 	}
 
-	// Validate required fields
-	if params.SessionID == "" {
-		return fmt.Errorf("session_id is required")
-	}
-	if params.ToolName == "" {
-		return fmt.Errorf("tool_name is required")
+	if event.SessionID == "" || event.ToolName == "" {
+		return fmt.Errorf("missing required fields")
 	}
 
-	// Create StateManager using current working directory (after --cwd change)
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("failed to get working directory: %w", err)
 	}
 
 	stateManager := state.NewStateManager(filepath.Join(cwd, ".spcstr"))
-
 	ctx := context.Background()
 
-	// Increment tool usage
-	if err := stateManager.IncrementToolUsage(ctx, params.SessionID, params.ToolName); err != nil {
+	// Always increment tool usage
+	if err := stateManager.IncrementToolUsage(ctx, event.SessionID, event.ToolName); err != nil {
 		return fmt.Errorf("failed to increment tool usage: %w", err)
 	}
 
-	// Handle Task tool invocations (agent management)
-	if params.ToolName == "Task" && params.AgentName != "" {
-		// Add agent to active agents
-		if err := stateManager.AddAgent(ctx, params.SessionID, params.AgentName); err != nil {
-			return fmt.Errorf("failed to add agent to session: %w", err)
+	// Handle Task tool to extract agent info
+	if event.ToolName == "Task" {
+		var taskInput events.TaskInput
+		if err := json.Unmarshal(event.ToolInput, &taskInput); err == nil && taskInput.SubagentType != "" {
+			if err := stateManager.AddAgent(ctx, event.SessionID, taskInput.SubagentType); err != nil {
+				return fmt.Errorf("failed to add agent: %w", err)
+			}
 		}
 	}
 
+	// Never block operations - let Claude handle permissions
 	return nil
 }

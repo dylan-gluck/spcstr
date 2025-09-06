@@ -1,8 +1,8 @@
 {
   "session_id": "52855b54-e842-4930-931b-1ce4ba6e0bfb",
   "created_at": "2025-09-06T04:30:51.96561Z",
-  "updated_at": "2025-09-06T04:30:51.96561Z",
-  "session_active": true,
+  "updated_at": "2025-09-06T04:32:00.236138Z",
+  "session_active": false,
   "agents": [],
   "agents_history": [],
   "files": {
@@ -10,8 +10,17 @@
     "edited": [],
     "read": []
   },
-  "tools_used": {},
+  "tools_used": {
+    "Bash": 7
+  },
   "errors": [],
-  "prompts": [],
+  "prompts": [
+    {
+      "timestamp": "2025-09-06T00:31:00.00998-04:00",
+      "prompt": "/git:commit ",
+      "response": "",
+      "tools_used": []
+    }
+  ],
   "notifications": []
 }

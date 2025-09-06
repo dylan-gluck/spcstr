@@ -1,0 +1,61 @@
+{
+  "session_id": "c2dd4e1b-60ae-4da2-9854-4fea25ea0332",
+  "created_at": "2025-09-06T04:53:57.835432Z",
+  "updated_at": "2025-09-06T05:04:42.636983Z",
+  "session_active": false,
+  "agents": [],
+  "agents_history": [],
+  "files": {
+    "new": [],
+    "edited": [],
+    "read": []
+  },
+  "tools_used": {
+    "Bash": 14,
+    "Glob": 3,
+    "Read": 10,
+    "TodoWrite": 6,
+    "Write": 1
+  },
+  "errors": [],
+  "prompts": [
+    {
+      "timestamp": "2025-09-06T00:54:11.046831-04:00",
+      "prompt": "/BMad:agents:sm ",
+      "response": "",
+      "tools_used": []
+    },
+    {
+      "timestamp": "2025-09-06T00:56:10.592395-04:00",
+      "prompt": "*correct-course docs/plan/hook-state-fixes-strategy.md",
+      "response": "",
+      "tools_used": []
+    },
+    {
+      "timestamp": "2025-09-06T00:58:03.27556-04:00",
+      "prompt": "YOLO -- but also include instructions to reference `.spcstr/logs/` for all logged data and `.spcstr/sessions/*` to see what we are capturing in the session state.",
+      "response": "",
+      "tools_used": []
+    },
+    {
+      "timestamp": "2025-09-06T01:02:25.455652-04:00",
+      "prompt": "Save in stories folder",
+      "response": "",
+      "tools_used": []
+    }
+  ],
+  "notifications": [
+    {
+      "timestamp": "2025-09-06T01:01:12.639412-04:00",
+      "type": "hook",
+      "message": "Claude is waiting for your input",
+      "level": "info"
+    },
+    {
+      "timestamp": "2025-09-06T01:03:51.646551-04:00",
+      "type": "hook",
+      "message": "Claude is waiting for your input",
+      "level": "info"
+    }
+  ]
+}

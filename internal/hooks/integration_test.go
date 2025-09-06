@@ -70,7 +70,11 @@ func TestHookWorkflowIntegration(t *testing.T) {
 		input := `{
 			"session_id": "` + sessionID + `",
 			"tool_name": "Task",
-			"agent_name": "test_agent"
+			"tool_input": {
+				"description": "Test task",
+				"prompt": "Test prompt",
+				"subagent_type": "test_agent"
+			}
 		}`
 
 		err := ExecuteHook("pre_tool_use", projectDir, []byte(input))
@@ -79,15 +83,68 @@ func TestHookWorkflowIntegration(t *testing.T) {
 		}
 	})
 
-	// Test 4: Post Tool Use
-	t.Run("post_tool_use", func(t *testing.T) {
+	// Test 4: Post Tool Use for file operations
+	t.Run("post_tool_use_write", func(t *testing.T) {
+		input := `{
+			"session_id": "` + sessionID + `",
+			"tool_name": "Write",
+			"tool_input": {
+				"file_path": "test.go"
+			},
+			"tool_response": {
+				"filePath": "test.go",
+				"type": "create"
+			}
+		}`
+
+		err := ExecuteHook("post_tool_use", projectDir, []byte(input))
+		if err != nil {
+			t.Fatalf("post_tool_use hook failed: %v", err)
+		}
+	})
+
+	// Test 4b: Post Tool Use for Edit
+	t.Run("post_tool_use_edit", func(t *testing.T) {
+		input := `{
+			"session_id": "` + sessionID + `",
+			"tool_name": "Edit",
+			"tool_input": {
+				"file_path": "main.go"
+			},
+			"tool_response": {
+				"filePath": "main.go",
+				"type": "edit"
+			}
+		}`
+
+		err := ExecuteHook("post_tool_use", projectDir, []byte(input))
+		if err != nil {
+			t.Fatalf("post_tool_use hook failed: %v", err)
+		}
+	})
+
+	// Test 4c: Post Tool Use for Read
+	t.Run("post_tool_use_read", func(t *testing.T) {
+		input := `{
+			"session_id": "` + sessionID + `",
+			"tool_name": "Read",
+			"tool_input": {
+				"file_path": "config.json"
+			}
+		}`
+
+		err := ExecuteHook("post_tool_use", projectDir, []byte(input))
+		if err != nil {
+			t.Fatalf("post_tool_use hook failed: %v", err)
+		}
+	})
+
+	// Test 4d: Post Tool Use for Task completion
+	t.Run("post_tool_use_task", func(t *testing.T) {
 		input := `{
 			"session_id": "` + sessionID + `",
 			"tool_name": "Task",
-			"agent_name": "test_agent",
-			"files_created": ["test.go"],
-			"files_edited": ["main.go"],
-			"files_read": ["config.json"]
+			"tool_response": {}
 		}`
 
 		err := ExecuteHook("post_tool_use", projectDir, []byte(input))

@@ -1,88 +1,95 @@
+# Hook logic & State
 
+The state management system is almost working as expected but there are some improvements we need to make.
 
- # Post Tool Use
+Currently the session directories and state files are being created, and the tool use is being calculated, but we are not getting any info about subagent use, errors, files that have been accessed, etc.
 
+The following examples were pulled from the `.spcstr/logs` directory. Analyze these and use `jq` to parse & analyze the log files to understand what data is being passed to the hook commands for processing.
 
- ### TodoWrite
+# Post Tool Use
+
+### TodoWrite
+
+We should be able to calculate the number of Pending, Completed, total todo items for a session.
+
+Use `jq` to analyze the full object from the event in the following snippet. The log is in `.spcstr/logs/post_tool_use.json`
+
+Use this JSON structure to plan and implement the logic to calculate and store this session data.
+
+Consider caching the most recent TODO item(s) in the state object for displaying in the dashboard view.
 
 ```json
- Snippet:
-  {
-    "timestamp": "2025-09-05T22:16:32.945212-04:00",
+Snippet:
+{
+  "timestamp": "2025-09-05T22:16:32.945212-04:00",
+  "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+  "hook_name": "post_tool_use",
+  "input_data": {
+    "cwd": "/Users/dylan/Workspace/projects/spcstr",
+    "hook_event_name": "PostToolUse",
+    "permission_mode": "bypassPermissions",
     "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
-    "hook_name": "post_tool_use",
-    "input_data": {
-      "cwd": "/Users/dylan/Workspace/projects/spcstr",
-      "hook_event_name": "PostToolUse",
-      "permission_mode": "bypassPermissions",
-      "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
-      "tool_input": {
-        "todos": [
-          {
-            "activeForm": "Creating TUI application foundation with Bubbletea",
-            "content": "Create TUI application foundation with Bubbletea",
-            "status": "completed"
-          },
+    ...
+  }
+}
 ```
 
 
 ## Write / Edit etc:
 
+All file operations have the same schema structure. We care most about the `tool_name` and `filePath`.
+
 ```json
 {
-    "timestamp": "2025-09-05T22:15:49.461752-04:00",
+  "timestamp": "2025-09-05T22:15:49.461752-04:00",
+  "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+  "hook_name": "post_tool_use",
+  "input_data": {
+    "cwd": "/Users/dylan/Workspace/projects/spcstr",
+    "hook_event_name": "PostToolUse",
+    "permission_mode": "bypassPermissions",
     "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
-    "hook_name": "post_tool_use",
-    "input_data": {
-      "cwd": "/Users/dylan/Workspace/projects/spcstr",
-      "hook_event_name": "PostToolUse",
-      "permission_mode": "bypassPermissions",
-      "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
-      "tool_input": {
-        "content": "package observe\n\nimport (\n\ttea \"github.com/charmbracelet/bubbletea\"\n\t\"github.com/charmbracelet/lipgloss\"\n)\n\ntype Model struct {\n\twidth  int\n\theight int\n\tstyles Styles\n}\n\ntype Styles struct {\n\tContainer lipgloss.Style\n\tTitle     lipgloss.Style\n\tContent   lipgloss.Style\n}\n\nfunc New() Model {\n\treturn Model{\n\t\tstyles: defaultStyles(),\n\t}\n}\n\nfunc defaultStyles() Styles {\n\treturn Styles{\n\t\tContainer: lipgloss.NewStyle().\n\t\t\tBorderStyle(lipgloss.RoundedBorder()).\n\t\t\tBorderForeground(lipgloss.Color(\"62\")).\n\t\t\tPadding(1, 2),\n\t\tTitle: lipgloss.NewStyle().\n\t\t\tBold(true).\n\t\t\tForeground(lipgloss.Color(\"205\")).\n\t\t\tMarginBottom(1),\n\t\tContent: lipgloss.NewStyle().\n\t\t\tForeground(lipgloss.Color(\"248\")),\n\t}\n}\n\nfunc (m Model) Init() tea.Cmd {\n\treturn nil\n}\n\nfunc (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {\n\tswitch msg := msg.(type) {\n\tcase tea.WindowSizeMsg:\n\t\tm.width = msg.Width\n\t\tm.height = msg.Height - 3 // Account for header and footer\n\t}\n\treturn m, nil\n}\n\nfunc (m Model) View() string {\n\tif m.width == 0 || m.height == 0 {\n\t\treturn \"\"\n\t}\n\t\n\ttitle := m.styles.Title.Render(\"Observe View\")\n\tcontent := m.styles.Content.Render(\"Session monitoring dashboard will be displayed here\\n\\nSession Status: No active session\\n\\nRecent Events:\\n• Waiting for session...\")\n\t\n\tinnerContent := lipgloss.JoinVertical(\n\t\tlipgloss.Left,\n\t\ttitle,\n\t\tcontent,\n\t)\n\t\n\treturn m.styles.Container.\n\t\tWidth(m.width - 4).\n\t\tHeight(m.height - 4).\n\t\tRender(innerContent)\n}",
-        "file_path": "/Users/dylan/Workspace/projects/spcstr/internal/tui/views/observe/observe.go"
-      },
-      "tool_name": "Write",
-      "tool_response": {
-        "content": "package observe\n\nimport (\n\ttea \"github.com/charmbracelet/bubbletea\"\n\t\"github.com/charmbracelet/lipgloss\"\n)\n\ntype Model struct {\n\twidth  int\n\theight int\n\tstyles Styles\n}\n\ntype Styles struct {\n\tContainer lipgloss.Style\n\tTitle     lipgloss.Style\n\tContent   lipgloss.Style\n}\n\nfunc New() Model {\n\treturn Model{\n\t\tstyles: defaultStyles(),\n\t}\n}\n\nfunc defaultStyles() Styles {\n\treturn Styles{\n\t\tContainer: lipgloss.NewStyle().\n\t\t\tBorderStyle(lipgloss.RoundedBorder()).\n\t\t\tBorderForeground(lipgloss.Color(\"62\")).\n\t\t\tPadding(1, 2),\n\t\tTitle: lipgloss.NewStyle().\n\t\t\tBold(true).\n\t\t\tForeground(lipgloss.Color(\"205\")).\n\t\t\tMarginBottom(1),\n\t\tContent: lipgloss.NewStyle().\n\t\t\tForeground(lipgloss.Color(\"248\")),\n\t}\n}\n\nfunc (m Model) Init() tea.Cmd {\n\treturn nil\n}\n\nfunc (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {\n\tswitch msg := msg.(type) {\n\tcase tea.WindowSizeMsg:\n\t\tm.width = msg.Width\n\t\tm.height = msg.Height - 3 // Account for header and footer\n\t}\n\treturn m, nil\n}\n\nfunc (m Model) View() string {\n\tif m.width == 0 || m.height == 0 {\n\t\treturn \"\"\n\t}\n\t\n\ttitle := m.styles.Title.Render(\"Observe View\")\n\tcontent := m.styles.Content.Render(\"Session monitoring dashboard will be displayed here\\n\\nSession Status: No active session\\n\\nRecent Events:\\n• Waiting for session...\")\n\t\n\tinnerContent := lipgloss.JoinVertical(\n\t\tlipgloss.Left,\n\t\ttitle,\n\t\tcontent,\n\t)\n\t\n\treturn m.styles.Container.\n\t\tWidth(m.width - 4).\n\t\tHeight(m.height - 4).\n\t\tRender(innerContent)\n}",
-        "filePath": "/Users/dylan/Workspace/projects/spcstr/internal/tui/views/observe/observe.go",
-        "structuredPatch": [],
-        "type": "create"
-      },
-      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/3ef7f904-7316-4b70-881c-5d2ed8459bbc.jsonl"
+    "tool_input": {
+      "content": "...",
+      "file_path": "/Users/dylan/Workspace/projects/spcstr/internal/tui/views/observe/observe.go"
     },
-    "success": true
+    "tool_name": "Write",
+    "tool_response": {
+      "content": "...",
+      "filePath": "/Users/dylan/Workspace/projects/spcstr/internal/tui/views/observe/observe.go",
+      "structuredPatch": [],
+      "type": "create"
+    },
+    "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/3ef7f904-7316-4b70-881c-5d2ed8459bbc.jsonl"
   },
+  "success": true
+},
 ```
 
 # Pre Tool Use
 
+# Error calling tool
 
-  meta-commit(Create git commit)
-  ⎿  Running hook PreToolUse:Task...
-  ⎿  Error: Read operation blocked by hook:
-     - [spcstr hook pre_tool_use --cwd="${CLAUDE_PROJECT_DIR}"]:                                                                     Warning: Failed to log hook event: failed to rename temp log
+Here is an example of an error. Find the JSON log of this error or where it was blocked in .spcstr/logs/pre_tool_use.json
 
+Errors must be logged in the session state.
+
+meta-commit(Create git commit)
+⎿  Running hook PreToolUse:Task...
+⎿  Error: Read operation blocked by hook:
+    - [spcstr hook pre_tool_use --cwd="${CLAUDE_PROJECT_DIR}"]:                                                                     Warning: Failed to log hook event: failed to rename temp log
+
+Also, Identify why this is failing we should not be doing any command filtering or security checks at this time. Do not block ANYTHING. Leave that to claude.
 
 # Subagent Stop
 
+## Agent Name??
+
+Where did agent name come from? Agent name can only be extracted from pre/post tool use Task events. Remove this logic fully.
+
 Commit: d5b0a30 - fix(hooks): make agent_name optional in
-  subagent_stop handler
+subagent_stop handler
 
-  Changes Made:
-
-  - Modified the subagent_stop hook handler to make
-  agent_name parameter optional
-  - Added default value "claude" when the parameter is
-  missing
-  - This prevents errors when Claude Code doesn't provide
-  the agent_name during session termination
-
-  Files Modified:
-
-  - internal/hooks/handlers/subagent_stop.go - Added
-  optional parameter handling
-
-  The fix ensures that session termination won't fail due to
-   missing agent_name parameters, improving the robustness
-  of the hook system integration with Claude Code.
+The fix ensures that session termination won't fail due to
+  missing agent_name parameters, improving the robustness
+of the hook system integration with Claude Code.

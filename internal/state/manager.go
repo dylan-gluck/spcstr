@@ -68,6 +68,14 @@ func (sm *StateManager) InitializeState(ctx context.Context, sessionID string) (
 		Errors:        make([]ErrorEntry, 0),
 		Prompts:       make([]PromptEntry, 0),
 		Notifications: make([]NotificationEntry, 0),
+		Todos: TodoState{
+			Total:       0,
+			Pending:     0,
+			InProgress:  0,
+			Completed:   0,
+			Recent:      make([]TodoItem, 0),
+			LastUpdated: "",
+		},
 	}
 
 	// Create session directory and write initial state
@@ -347,4 +355,22 @@ func (sm *StateManager) SetSessionActive(ctx context.Context, sessionID string, 
 		state.SessionActive = active
 		return nil
 	})
+}
+
+// UpdateTodos updates the todo state for a session
+func (sm *StateManager) UpdateTodos(ctx context.Context, sessionID string, todos TodoState) error {
+	return sm.UpdateState(ctx, sessionID, func(state *SessionState) error {
+		state.Todos = todos
+		return nil
+	})
+}
+
+// GetSessionState returns the current session state (alias for LoadState)
+func (sm *StateManager) GetSessionState(ctx context.Context, sessionID string) (*SessionState, error) {
+	return sm.LoadState(ctx, sessionID)
+}
+
+// updateSessionState is a helper for updating session state with a custom function
+func (sm *StateManager) updateSessionState(ctx context.Context, sessionID string, updateFunc func(*SessionState) error) error {
+	return sm.UpdateState(ctx, sessionID, updateFunc)
 }

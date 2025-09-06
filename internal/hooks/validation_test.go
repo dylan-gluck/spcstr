@@ -83,8 +83,8 @@ func TestJSONValidation(t *testing.T) {
 		},
 		{
 			hookName:    "subagent_stop",
-			validJSON:   `{"session_id": "test123", "agent_name": "test_agent"}`,
-			invalidJSON: `{"session_id": "test123"}`,
+			validJSON:   `{"session_id": "test123"}`,
+			invalidJSON: `{"session_id": ""}`,
 		},
 	}
 

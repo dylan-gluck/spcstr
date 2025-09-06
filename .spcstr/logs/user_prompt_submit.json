@@ -586,5 +586,131 @@
       "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/f2af031b-070a-4ef4-a1c3-41679202c678.jsonl"
     },
     "success": true
+  },
+  {
+    "timestamp": "2025-09-06T00:31:00.010482-04:00",
+    "session_id": "52855b54-e842-4930-931b-1ce4ba6e0bfb",
+    "hook_name": "user_prompt_submit",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "UserPromptSubmit",
+      "permission_mode": "bypassPermissions",
+      "prompt": "/git:commit ",
+      "session_id": "52855b54-e842-4930-931b-1ce4ba6e0bfb",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/52855b54-e842-4930-931b-1ce4ba6e0bfb.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-06T00:32:03.207662-04:00",
+    "session_id": "7743bd03-9533-437b-8c13-b027cbd351cd",
+    "hook_name": "user_prompt_submit",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "UserPromptSubmit",
+      "permission_mode": "bypassPermissions",
+      "prompt": "/BMad:agents:analyst ",
+      "session_id": "7743bd03-9533-437b-8c13-b027cbd351cd",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7743bd03-9533-437b-8c13-b027cbd351cd.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-06T00:50:15.081838-04:00",
+    "session_id": "7743bd03-9533-437b-8c13-b027cbd351cd",
+    "hook_name": "user_prompt_submit",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "UserPromptSubmit",
+      "permission_mode": "bypassPermissions",
+      "prompt": "Read @docs/plan/update-bad-hook-logic.md\n\nThen analyze the referenced log entries and corresponding session state files. (For example: .spcstr/sessions/ace1eb1d-598e-4c20-acc2-f306a0d7899a/state.json)\n\nExamine the implementation to identify any specific code causing the issue.\n\nStrategize the logic updates needed to fix the session state manager and save to a new document in `docs/`",
+      "session_id": "7743bd03-9533-437b-8c13-b027cbd351cd",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7743bd03-9533-437b-8c13-b027cbd351cd.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-06T00:54:11.047362-04:00",
+    "session_id": "c2dd4e1b-60ae-4da2-9854-4fea25ea0332",
+    "hook_name": "user_prompt_submit",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "UserPromptSubmit",
+      "permission_mode": "bypassPermissions",
+      "prompt": "/BMad:agents:sm ",
+      "session_id": "c2dd4e1b-60ae-4da2-9854-4fea25ea0332",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/c2dd4e1b-60ae-4da2-9854-4fea25ea0332.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-06T00:56:10.592825-04:00",
+    "session_id": "c2dd4e1b-60ae-4da2-9854-4fea25ea0332",
+    "hook_name": "user_prompt_submit",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "UserPromptSubmit",
+      "permission_mode": "bypassPermissions",
+      "prompt": "*correct-course docs/plan/hook-state-fixes-strategy.md",
+      "session_id": "c2dd4e1b-60ae-4da2-9854-4fea25ea0332",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/c2dd4e1b-60ae-4da2-9854-4fea25ea0332.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-06T00:58:03.276098-04:00",
+    "session_id": "c2dd4e1b-60ae-4da2-9854-4fea25ea0332",
+    "hook_name": "user_prompt_submit",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "UserPromptSubmit",
+      "permission_mode": "bypassPermissions",
+      "prompt": "YOLO -- but also include instructions to reference `.spcstr/logs/` for all logged data and `.spcstr/sessions/*` to see what we are capturing in the session state.",
+      "session_id": "c2dd4e1b-60ae-4da2-9854-4fea25ea0332",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/c2dd4e1b-60ae-4da2-9854-4fea25ea0332.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-06T01:02:25.456139-04:00",
+    "session_id": "c2dd4e1b-60ae-4da2-9854-4fea25ea0332",
+    "hook_name": "user_prompt_submit",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "UserPromptSubmit",
+      "permission_mode": "bypassPermissions",
+      "prompt": "Save in stories folder",
+      "session_id": "c2dd4e1b-60ae-4da2-9854-4fea25ea0332",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/c2dd4e1b-60ae-4da2-9854-4fea25ea0332.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-06T01:04:54.507167-04:00",
+    "session_id": "86e36ac8-a8f1-427a-a6c9-adbef147ff57",
+    "hook_name": "user_prompt_submit",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "UserPromptSubmit",
+      "permission_mode": "bypassPermissions",
+      "prompt": "/BMad:agents:dev ",
+      "session_id": "86e36ac8-a8f1-427a-a6c9-adbef147ff57",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/86e36ac8-a8f1-427a-a6c9-adbef147ff57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-06T01:05:18.198476-04:00",
+    "session_id": "86e36ac8-a8f1-427a-a6c9-adbef147ff57",
+    "hook_name": "user_prompt_submit",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "UserPromptSubmit",
+      "permission_mode": "bypassPermissions",
+      "prompt": "Implement change request docs/stories/hook-state-fixes-change-proposal.md",
+      "session_id": "86e36ac8-a8f1-427a-a6c9-adbef147ff57",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/86e36ac8-a8f1-427a-a6c9-adbef147ff57.jsonl"
+    },
+    "success": true
   }
 ]
