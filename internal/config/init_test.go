@@ -117,21 +117,76 @@ func TestConfigureClaudeHooks(t *testing.T) {
 					t.Fatal("hooks not found in settings or wrong type")
 				}
 				
-				expectedHooks := []string{
-					"session_start",
-					"user_prompt_submit",
-					"pre_tool_use",
-					"post_tool_use",
-					"notification",
-					"pre_compact",
-					"session_end",
-					"stop",
-					"subagent_stop",
+				// Check for PascalCase event names and proper structure
+				expectedHooks := map[string]string{
+					"SessionStart":     "session_start",
+					"UserPromptSubmit": "user_prompt_submit",
+					"PreToolUse":       "pre_tool_use",
+					"PostToolUse":      "post_tool_use",
+					"Notification":     "notification",
+					"PreCompact":       "pre_compact",
+					"SessionEnd":       "session_end",
+					"Stop":             "stop",
+					"SubagentStop":     "subagent_stop",
 				}
 				
-				for _, hookName := range expectedHooks {
-					if _, exists := hooks[hookName]; !exists {
-						t.Errorf("hook %s not found in settings", hookName)
+				for eventName, commandName := range expectedHooks {
+					hookArray, exists := hooks[eventName]
+					if !exists {
+						t.Errorf("event %s not found in settings", eventName)
+						continue
+					}
+					
+					// Verify it's an array
+					arr, ok := hookArray.([]interface{})
+					if !ok || len(arr) == 0 {
+						t.Errorf("event %s is not an array or is empty", eventName)
+						continue
+					}
+					
+					// Check first element structure
+					firstConfig, ok := arr[0].(map[string]interface{})
+					if !ok {
+						t.Errorf("event %s first element is not a map", eventName)
+						continue
+					}
+					
+					// Check for hooks array
+					hooksArr, ok := firstConfig["hooks"].([]interface{})
+					if !ok || len(hooksArr) == 0 {
+						t.Errorf("event %s does not have hooks array", eventName)
+						continue
+					}
+					
+					// Check first hook structure
+					firstHook, ok := hooksArr[0].(map[string]interface{})
+					if !ok {
+						t.Errorf("event %s first hook is not a map", eventName)
+						continue
+					}
+					
+					// Verify type and command fields
+					if hookType, ok := firstHook["type"].(string); !ok || hookType != "command" {
+						t.Errorf("event %s hook does not have type 'command'", eventName)
+					}
+					
+					if command, ok := firstHook["command"].(string); !ok {
+						t.Errorf("event %s hook does not have command field", eventName)
+					} else {
+						expectedCmd := `spcstr hook ` + commandName + ` --cwd="${CLAUDE_PROJECT_DIR}"`
+						if command != expectedCmd {
+							t.Errorf("event %s command mismatch: got %q, want %q", eventName, command, expectedCmd)
+						}
+					}
+					
+					// Check matcher field for events that need it
+					needsMatcher := []string{"PreToolUse", "PostToolUse", "PreCompact"}
+					for _, name := range needsMatcher {
+						if eventName == name {
+							if matcher, exists := firstConfig["matcher"]; !exists || matcher != "*" {
+								t.Errorf("event %s should have matcher='*'", eventName)
+							}
+						}
 					}
 				}
 				

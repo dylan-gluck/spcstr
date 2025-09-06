@@ -122,17 +122,102 @@ func configureClaudeHooks(ctx context.Context, projectRoot string) error {
 		settings = make(map[string]interface{})
 	}
 
-	// Define hook commands
-	hooks := map[string]string{
-		"session_start":      `spcstr hook session_start --cwd="${CLAUDE_PROJECT_DIR}"`,
-		"user_prompt_submit": `spcstr hook user_prompt_submit --cwd="${CLAUDE_PROJECT_DIR}"`,
-		"pre_tool_use":       `spcstr hook pre_tool_use --cwd="${CLAUDE_PROJECT_DIR}"`,
-		"post_tool_use":      `spcstr hook post_tool_use --cwd="${CLAUDE_PROJECT_DIR}"`,
-		"notification":       `spcstr hook notification --cwd="${CLAUDE_PROJECT_DIR}"`,
-		"pre_compact":        `spcstr hook pre_compact --cwd="${CLAUDE_PROJECT_DIR}"`,
-		"session_end":        `spcstr hook session_end --cwd="${CLAUDE_PROJECT_DIR}"`,
-		"stop":               `spcstr hook stop --cwd="${CLAUDE_PROJECT_DIR}"`,
-		"subagent_stop":      `spcstr hook subagent_stop --cwd="${CLAUDE_PROJECT_DIR}"`,
+	// Define hooks in correct Claude Code format
+	hooks := map[string]interface{}{
+		"SessionStart": []map[string]interface{}{
+			{
+				"matcher": "",
+				"hooks": []map[string]interface{}{
+					{
+						"type":    "command",
+						"command": `spcstr hook session_start --cwd="${CLAUDE_PROJECT_DIR}"`,
+					},
+				},
+			},
+		},
+		"UserPromptSubmit": []map[string]interface{}{
+			{
+				"hooks": []map[string]interface{}{
+					{
+						"type":    "command",
+						"command": `spcstr hook user_prompt_submit --cwd="${CLAUDE_PROJECT_DIR}"`,
+					},
+				},
+			},
+		},
+		"PreToolUse": []map[string]interface{}{
+			{
+				"matcher": "*",
+				"hooks": []map[string]interface{}{
+					{
+						"type":    "command",
+						"command": `spcstr hook pre_tool_use --cwd="${CLAUDE_PROJECT_DIR}"`,
+					},
+				},
+			},
+		},
+		"PostToolUse": []map[string]interface{}{
+			{
+				"matcher": "*",
+				"hooks": []map[string]interface{}{
+					{
+						"type":    "command",
+						"command": `spcstr hook post_tool_use --cwd="${CLAUDE_PROJECT_DIR}"`,
+					},
+				},
+			},
+		},
+		"Notification": []map[string]interface{}{
+			{
+				"hooks": []map[string]interface{}{
+					{
+						"type":    "command",
+						"command": `spcstr hook notification --cwd="${CLAUDE_PROJECT_DIR}"`,
+					},
+				},
+			},
+		},
+		"PreCompact": []map[string]interface{}{
+			{
+				"matcher": "*",
+				"hooks": []map[string]interface{}{
+					{
+						"type":    "command",
+						"command": `spcstr hook pre_compact --cwd="${CLAUDE_PROJECT_DIR}"`,
+					},
+				},
+			},
+		},
+		"SessionEnd": []map[string]interface{}{
+			{
+				"hooks": []map[string]interface{}{
+					{
+						"type":    "command",
+						"command": `spcstr hook session_end --cwd="${CLAUDE_PROJECT_DIR}"`,
+					},
+				},
+			},
+		},
+		"Stop": []map[string]interface{}{
+			{
+				"hooks": []map[string]interface{}{
+					{
+						"type":    "command",
+						"command": `spcstr hook stop --cwd="${CLAUDE_PROJECT_DIR}"`,
+					},
+				},
+			},
+		},
+		"SubagentStop": []map[string]interface{}{
+			{
+				"hooks": []map[string]interface{}{
+					{
+						"type":    "command",
+						"command": `spcstr hook subagent_stop --cwd="${CLAUDE_PROJECT_DIR}"`,
+					},
+				},
+			},
+		},
 	}
 
 	// Set hooks in settings
