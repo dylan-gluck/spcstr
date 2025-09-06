@@ -2,6 +2,8 @@
 
 Multi-agent observability for Claude Code sessions. Track agent activities, file operations, and task progress in real-time through an intuitive TUI.
 
+**Version:** 0.0.1 (Initial Release)
+
 ## Features
 
 - **Automatic Session Tracking** - Transparent hook-based monitoring of Claude Code sessions
