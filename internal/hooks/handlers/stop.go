@@ -1,13 +1,8 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
-
-	"github.com/dylan/spcstr/internal/state"
 )
 
 // StopParams defines the expected input for stop hook
@@ -40,19 +35,10 @@ func (h *StopHandler) Execute(input []byte) error {
 		return fmt.Errorf("session_id is required")
 	}
 
-	// Create StateManager using current working directory (after --cwd change)
-	cwd, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get working directory: %w", err)
-	}
-
-	stateManager := state.NewStateManager(filepath.Join(cwd, ".spcstr"))
-
-	// Set session as inactive
-	ctx := context.Background()
-	if err := stateManager.SetSessionActive(ctx, params.SessionID, false); err != nil {
-		return fmt.Errorf("failed to set session inactive: %w", err)
-	}
-
+	// Stop hook is called when Claude finishes a response turn
+	// The session remains active - it only becomes inactive on session_end
+	// For now, we don't need to do anything here, but we keep the handler
+	// to acknowledge the hook was received successfully
+	
 	return nil
 }

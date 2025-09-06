@@ -115,6 +115,10 @@ func (a *App) initializeViews() tea.Cmd {
 		updatedObserve, _ := observeModel.Update(tea.WindowSizeMsg{Width: a.state.windowWidth, Height: a.state.windowHeight})
 		observeModel = updatedObserve.(observe.Model)
 	}
+	// Get the init command from the observe view
+	if cmd := observeModel.Init(); cmd != nil {
+		cmds = append(cmds, cmd)
+	}
 	a.state.observeView = observeModel
 	
 	return tea.Batch(cmds...)
@@ -153,13 +157,15 @@ func (a *App) handleGlobalKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 	case "p":
 		if a.state.currentView != ViewPlan {
-			a.switchView(ViewPlan)
+			cmd := a.switchView(ViewPlan)
+			return a, cmd
 		}
 		return a, nil
 
 	case "o":
 		if a.state.currentView != ViewObserve {
-			a.switchView(ViewObserve)
+			cmd := a.switchView(ViewObserve)
+			return a, cmd
 		}
 		return a, nil
 	}
@@ -167,7 +173,7 @@ func (a *App) handleGlobalKeys(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	return a.updateCurrentView(msg)
 }
 
-func (a *App) switchView(view ViewType) {
+func (a *App) switchView(view ViewType) tea.Cmd {
 	start := time.Now()
 	a.state.currentView = view
 
@@ -188,6 +194,16 @@ func (a *App) switchView(view ViewType) {
 		log.Printf("WARNING: View switch took %v (exceeded 100ms requirement)", elapsed)
 	}
 	a.state.lastSwitchTime = start
+	
+	// Trigger view initialization when switching to observe for first time
+	if view == ViewObserve && a.state.observeView != nil {
+		observeModel := a.state.observeView.(observe.Model)
+		if !observeModel.IsInitialized() {
+			return observeModel.Init()
+		}
+	}
+	
+	return nil
 }
 
 func (a *App) propagateSizeUpdate(msg tea.WindowSizeMsg) tea.Cmd {
@@ -205,13 +221,13 @@ func (a *App) propagateSizeUpdate(msg tea.WindowSizeMsg) tea.Cmd {
 		cmds = append(cmds, cmd)
 	}
 
-	if a.state.planView != nil && a.state.currentView == ViewPlan {
+	if a.state.planView != nil {
 		updated, cmd := a.state.planView.Update(msg)
 		a.state.planView = updated
 		cmds = append(cmds, cmd)
 	}
 
-	if a.state.observeView != nil && a.state.currentView == ViewObserve {
+	if a.state.observeView != nil {
 		updated, cmd := a.state.observeView.Update(msg)
 		a.state.observeView = updated
 		cmds = append(cmds, cmd)
@@ -274,26 +290,18 @@ func (a *App) View() string {
 	switch a.state.currentView {
 	case ViewPlan:
 		if a.state.planView != nil {
-			if v := a.state.planView.View(); v != "" {
-				mainContent = v
-			} else {
-				mainContent = a.renderPlaceholderView("Plan View", mainHeight)
-			}
+			mainContent = a.state.planView.View()
 		} else {
-			mainContent = a.renderPlaceholderView("Plan View", mainHeight)
+			mainContent = "Loading Plan View..."
 		}
 	case ViewObserve:
 		if a.state.observeView != nil {
-			if v := a.state.observeView.View(); v != "" {
-				mainContent = v
-			} else {
-				mainContent = a.renderPlaceholderView("Observe View", mainHeight)
-			}
+			mainContent = a.state.observeView.View()
 		} else {
-			mainContent = a.renderPlaceholderView("Observe View", mainHeight)
+			mainContent = "Loading Observe View..."
 		}
 	default:
-		mainContent = a.renderPlaceholderView("Unknown View", mainHeight)
+		mainContent = "Unknown View"
 	}
 
 	return header + "\n" + mainContent + "\n" + footer
@@ -360,26 +368,6 @@ func (a *App) renderDefaultFooter() string {
 	return footerStyle.Render(keybinds)
 }
 
-func (a *App) renderPlaceholderView(name string, height int) string {
-	// Use MaxWidth and account for border
-	maxWidth := a.state.windowWidth - 2
-	if maxWidth < 20 {
-		maxWidth = 20
-	}
-
-	style := lipgloss.NewStyle().
-		MaxWidth(maxWidth).
-		Height(height).
-		Align(lipgloss.Center, lipgloss.Center).
-		BorderStyle(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("241"))
-
-	content := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("241")).
-		Render(fmt.Sprintf("%s\n(placeholder)", name))
-
-	return style.Render(content)
-}
 
 func (a *App) Run(ctx context.Context) error {
 	p := tea.NewProgram(a)

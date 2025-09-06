@@ -110,5 +110,19 @@
       "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/22e149c0-81ae-4990-9c19-6038dc2d1129.jsonl"
     },
     "success": true
+  },
+  {
+    "timestamp": "2025-09-06T01:28:06.692148-04:00",
+    "session_id": "5cfbf599-0956-4b40-b096-5d73c3cca8c5",
+    "hook_name": "subagent_stop",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SubagentStop",
+      "permission_mode": "bypassPermissions",
+      "session_id": "5cfbf599-0956-4b40-b096-5d73c3cca8c5",
+      "stop_hook_active": false,
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/5cfbf599-0956-4b40-b096-5d73c3cca8c5.jsonl"
+    },
+    "success": true
   }
 ]
