@@ -2,7 +2,9 @@
 
 Multi-agent observability for Claude Code sessions. Track agent activities, file operations, and task progress in real-time through an intuitive TUI.
 
-**Version:** 0.0.1 (Initial Release)
+![Planning Dashboard](docs/screenshot.png)
+
+**Version:** 0.0.1 (POC)
 
 ## Features
 
@@ -16,10 +18,11 @@ Multi-agent observability for Claude Code sessions. Track agent activities, file
 
 ### From Source
 ```bash
-git clone https://github.com/dylan/spcstr.git
+git clone https://github.com/dylan-gluck/spcstr.git
 cd spcstr
 make build
 # Binary available at bin/spcstr
+# Add to $PATH for hooks to function
 ```
 
 ## Quick Start
@@ -117,6 +120,6 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ## Support
 
-- Report issues: [GitHub Issues](https://github.com/dylan/spcstr/issues)
 - Documentation: [docs/](docs/)
+- Report issues: [GitHub Issues](https://github.com/dylan/spcstr/issues)
 - Community: [Discussions](https://github.com/dylan/spcstr/discussions)

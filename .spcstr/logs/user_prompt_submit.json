@@ -1034,5 +1034,19 @@
       "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/69b4323c-72e0-4bd2-a693-c048807a32ed.jsonl"
     },
     "success": true
+  },
+  {
+    "timestamp": "2025-09-06T02:10:22.309085-04:00",
+    "session_id": "69b4323c-72e0-4bd2-a693-c048807a32ed",
+    "hook_name": "user_prompt_submit",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "UserPromptSubmit",
+      "permission_mode": "bypassPermissions",
+      "prompt": "git push origin main",
+      "session_id": "69b4323c-72e0-4bd2-a693-c048807a32ed",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/69b4323c-72e0-4bd2-a693-c048807a32ed.jsonl"
+    },
+    "success": true
   }
 ]
