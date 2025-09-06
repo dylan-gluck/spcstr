@@ -5632,5 +5632,441 @@
       "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/ace1eb1d-598e-4c20-acc2-f306a0d7899a.jsonl"
     },
     "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:23:46.188842-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "command": "ls -la",
+        "description": "List project directory contents"
+      },
+      "tool_name": "Bash",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:23:49.227782-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "command": "pwd",
+        "description": "Show current directory"
+      },
+      "tool_name": "Bash",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:23:52.232157-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "command": "ls -la",
+        "description": "List files in spcstr directory"
+      },
+      "tool_name": "Bash",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:23:55.924592-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "command": "find . -maxdepth 2 -type f -name \"*.go\" -o -name \"*.md\" -o -name \"Makefile\" -o -name \"*.yaml\" -o -name \"*.yml\" | head -20",
+        "description": "Find project files to understand structure"
+      },
+      "tool_name": "Bash",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:23:59.24268-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "file_path": "/Users/dylan/Workspace/projects/spcstr/.bmad-core/core-config.yaml"
+      },
+      "tool_name": "Read",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:28:28.609261-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "todos": [
+          {
+            "activeForm": "Analyzing PRD and architecture documents",
+            "content": "Analyze PRD and architecture documents",
+            "status": "in_progress"
+          },
+          {
+            "activeForm": "Reviewing existing codebase structure",
+            "content": "Review existing codebase structure",
+            "status": "pending"
+          },
+          {
+            "activeForm": "Writing comprehensive README.md",
+            "content": "Write comprehensive README.md",
+            "status": "pending"
+          },
+          {
+            "activeForm": "Verifying README accuracy and completeness",
+            "content": "Verify README accuracy and completeness",
+            "status": "pending"
+          }
+        ]
+      },
+      "tool_name": "TodoWrite",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:28:31.652139-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "file_path": "/Users/dylan/Workspace/projects/spcstr/docs/prd.md"
+      },
+      "tool_name": "Read",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:28:35.219258-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "pattern": "docs/architecture/*.md"
+      },
+      "tool_name": "Glob",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:28:38.301468-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "file_path": "/Users/dylan/Workspace/projects/spcstr/docs/architecture/introduction.md"
+      },
+      "tool_name": "Read",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:28:41.886253-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "file_path": "/Users/dylan/Workspace/projects/spcstr/docs/architecture/tech-stack.md"
+      },
+      "tool_name": "Read",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:28:46.876511-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "todos": [
+          {
+            "activeForm": "Analyzing PRD and architecture documents",
+            "content": "Analyze PRD and architecture documents",
+            "status": "completed"
+          },
+          {
+            "activeForm": "Reviewing existing codebase structure",
+            "content": "Review existing codebase structure",
+            "status": "in_progress"
+          },
+          {
+            "activeForm": "Writing comprehensive README.md",
+            "content": "Write comprehensive README.md",
+            "status": "pending"
+          },
+          {
+            "activeForm": "Verifying README accuracy and completeness",
+            "content": "Verify README accuracy and completeness",
+            "status": "pending"
+          }
+        ]
+      },
+      "tool_name": "TodoWrite",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:28:51.139419-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "command": "ls -la cmd/ internal/ 2\u003e/dev/null || echo \"Directories not found\"",
+        "description": "Check existing code structure"
+      },
+      "tool_name": "Bash",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:28:54.223444-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "command": "go list -m all 2\u003e/dev/null | head -20",
+        "description": "Check Go dependencies"
+      },
+      "tool_name": "Bash",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:28:57.385566-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "command": "file bin/spcstr 2\u003e/dev/null || echo \"Binary not yet built\"",
+        "description": "Check if binary exists"
+      },
+      "tool_name": "Bash",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:29:01.859509-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "todos": [
+          {
+            "activeForm": "Analyzing PRD and architecture documents",
+            "content": "Analyze PRD and architecture documents",
+            "status": "completed"
+          },
+          {
+            "activeForm": "Reviewing existing codebase structure",
+            "content": "Review existing codebase structure",
+            "status": "completed"
+          },
+          {
+            "activeForm": "Writing comprehensive README.md",
+            "content": "Write comprehensive README.md",
+            "status": "in_progress"
+          },
+          {
+            "activeForm": "Verifying README accuracy and completeness",
+            "content": "Verify README accuracy and completeness",
+            "status": "pending"
+          }
+        ]
+      },
+      "tool_name": "TodoWrite",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:29:23.260975-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "content": "# spcstr\n\nMulti-agent observability for Claude Code sessions. Track agent activities, file operations, and task progress in real-time through an intuitive TUI.\n\n*Pre-release version - Available via Homebrew*\n\n## Features\n\n- **Automatic Session Tracking** - Transparent hook-based monitoring of Claude Code sessions\n- **Real-time Dashboard** - Live view of agents, tasks, files, and tool usage\n- **Plan Browser** - Navigate PRDs, architecture docs, and workflows with rich markdown rendering\n- **Zero Configuration** - Single `spcstr init` command sets up everything\n- **Privacy First** - All data stored locally, no network calls\n\n## Installation\n\n### Homebrew (macOS/Linux)\n```bash\nbrew tap dylan/spcstr\nbrew install spcstr\n```\n\n### From Source\n```bash\ngit clone https://github.com/dylan/spcstr.git\ncd spcstr\nmake build\n# Binary available at bin/spcstr\n```\n\n## Quick Start\n\n1. Initialize spcstr in your project:\n```bash\nspcstr init\n```\n\n2. Launch the TUI:\n```bash\nspcstr\n```\n\n3. Navigate with keyboard shortcuts:\n- `p` - Plan view (browse documentation)\n- `o` - Observe view (session dashboard)\n- `q` - Quit\n\n## How It Works\n\nSpec⭐️ integrates with Claude Code through a hook system that captures session events:\n\n1. **Initialization** - `spcstr init` configures your project with hook executables\n2. **State Tracking** - Hooks capture prompts, tool usage, file operations, and agent activities\n3. **Persistence** - Session data stored in `.spcstr/sessions/{session-id}/state.json`\n4. **Visualization** - TUI provides real-time and historical session analysis\n\n## Project Structure\n\n```\n.spcstr/\n├── sessions/          # Session state files\n│   └── {session-id}/\n│       └── state.json\n├── logs/             # Hook execution logs\n└── hooks/            # Hook configuration\n```\n\n## Development Setup\n\n### Prerequisites\n- Go 1.21 or higher\n- Make\n\n### Building\n```bash\nmake build        # Build binary to bin/\nmake test         # Run tests\nmake clean        # Clean build artifacts\n```\n\n### Project Layout\n```\ncmd/spcstr/       # Main application entry point\ninternal/\n├── config/       # Configuration management\n├── hooks/        # Hook command implementations\n├── state/        # State management and persistence\n└── tui/          # Terminal UI components\n```\n\n## Hook System\n\nSpec⭐️ tracks Claude Code sessions through 9 hooks:\n\n- `session_start` - Initialize new session\n- `user_prompt_submit` - Capture user prompts\n- `pre_tool_use` - Track tool invocations\n- `post_tool_use` - Record tool completions\n- `notification` - Log notifications\n- `pre_compact` - Monitor context compaction\n- `session_end` - Mark session complete\n- `stop` - Handle termination\n- `subagent_stop` - Track sub-agent lifecycle\n\n## Contributing\n\n1. Fork the repository\n2. Create your feature branch (`git checkout -b feature/amazing-feature`)\n3. Commit your changes (`git commit -m 'Add amazing feature'`)\n4. Push to the branch (`git push origin feature/amazing-feature`)\n5. Open a Pull Request\n\n### Code Standards\n- Follow Go conventions and idioms\n- Add tests for new functionality\n- Update documentation as needed\n- Keep commits atomic and well-described\n\n## License\n\nMIT License - see [LICENSE](LICENSE) file for details\n\n## Support\n\n- Report issues: [GitHub Issues](https://github.com/dylan/spcstr/issues)\n- Documentation: [docs/](docs/)\n- Community: [Discussions](https://github.com/dylan/spcstr/discussions)",
+        "file_path": "/Users/dylan/Workspace/projects/spcstr/README.md"
+      },
+      "tool_name": "Write",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:29:30.338048-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "todos": [
+          {
+            "activeForm": "Analyzing PRD and architecture documents",
+            "content": "Analyze PRD and architecture documents",
+            "status": "completed"
+          },
+          {
+            "activeForm": "Reviewing existing codebase structure",
+            "content": "Review existing codebase structure",
+            "status": "completed"
+          },
+          {
+            "activeForm": "Writing comprehensive README.md",
+            "content": "Write comprehensive README.md",
+            "status": "completed"
+          },
+          {
+            "activeForm": "Verifying README accuracy and completeness",
+            "content": "Verify README accuracy and completeness",
+            "status": "in_progress"
+          }
+        ]
+      },
+      "tool_name": "TodoWrite",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:29:33.410539-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "file_path": "/Users/dylan/Workspace/projects/spcstr/README.md"
+      },
+      "tool_name": "Read",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:29:39.251976-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "pre_tool_use",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "PreToolUse",
+      "permission_mode": "bypassPermissions",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "tool_input": {
+        "todos": [
+          {
+            "activeForm": "Analyzing PRD and architecture documents",
+            "content": "Analyze PRD and architecture documents",
+            "status": "completed"
+          },
+          {
+            "activeForm": "Reviewing existing codebase structure",
+            "content": "Review existing codebase structure",
+            "status": "completed"
+          },
+          {
+            "activeForm": "Writing comprehensive README.md",
+            "content": "Write comprehensive README.md",
+            "status": "completed"
+          },
+          {
+            "activeForm": "Verifying README accuracy and completeness",
+            "content": "Verify README accuracy and completeness",
+            "status": "completed"
+          }
+        ]
+      },
+      "tool_name": "TodoWrite",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
   }
 ]

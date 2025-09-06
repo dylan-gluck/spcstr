@@ -73,5 +73,18 @@
       "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/ace1eb1d-598e-4c20-acc2-f306a0d7899a.jsonl"
     },
     "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:23:14.880425-04:00",
+    "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+    "hook_name": "session_start",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SessionStart",
+      "session_id": "7839f315-f9f1-49c1-ab5c-3afbdc5b9d57",
+      "source": "startup",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/7839f315-f9f1-49c1-ab5c-3afbdc5b9d57.jsonl"
+    },
+    "success": true
   }
 ]
