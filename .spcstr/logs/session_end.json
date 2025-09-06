@@ -1,0 +1,54 @@
+[
+  {
+    "timestamp": "2025-09-05T22:11:42.62786-04:00",
+    "session_id": "3faf0f9b-01fa-4535-85e1-23d9623aa1c9",
+    "hook_name": "session_end",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SessionEnd",
+      "reason": "clear",
+      "session_id": "3faf0f9b-01fa-4535-85e1-23d9623aa1c9",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/3faf0f9b-01fa-4535-85e1-23d9623aa1c9.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T22:40:29.291361-04:00",
+    "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+    "hook_name": "session_end",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SessionEnd",
+      "reason": "prompt_input_exit",
+      "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/3ef7f904-7316-4b70-881c-5d2ed8459bbc.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T22:57:11.302291-04:00",
+    "session_id": "a82020b5-801e-492b-bbff-d82ae3fcd1a1",
+    "hook_name": "session_end",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SessionEnd",
+      "reason": "prompt_input_exit",
+      "session_id": "a82020b5-801e-492b-bbff-d82ae3fcd1a1",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/a82020b5-801e-492b-bbff-d82ae3fcd1a1.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:12:38.047426-04:00",
+    "session_id": "28ecf881-f8a1-4d1b-856e-8dce11d300ea",
+    "hook_name": "session_end",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SessionEnd",
+      "reason": "clear",
+      "session_id": "28ecf881-f8a1-4d1b-856e-8dce11d300ea",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/28ecf881-f8a1-4d1b-856e-8dce11d300ea.jsonl"
+    },
+    "success": true
+  }
+]

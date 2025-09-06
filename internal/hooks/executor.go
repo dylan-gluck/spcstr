@@ -39,7 +39,7 @@ func ExecuteHook(hookName string, projectDir string, input []byte) error {
 
 	// 4. Execute hook in project context
 	err = DefaultRegistry.Execute(hookName, input)
-	
+
 	// 5. Log the event
 	success := err == nil
 	if logErr := DefaultLogger.LogEvent(sessionID, hookName, inputData, success); logErr != nil {
@@ -54,7 +54,7 @@ func ExecuteHook(hookName string, projectDir string, input []byte) error {
 func isValidSpcstrProject(dir string) bool {
 	sessionsPath := filepath.Join(dir, ".spcstr", "sessions")
 	logsPath := filepath.Join(dir, ".spcstr", "logs")
-	
+
 	return dirExists(sessionsPath) && dirExists(logsPath)
 }
 

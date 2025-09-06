@@ -25,19 +25,19 @@ func TestCreateDirectoryStructure(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
 			err := createDirectoryStructure(ctx, tt.projectRoot)
-			
+
 			if tt.expectError && err == nil {
 				t.Error("expected error but got none")
 			}
 			if !tt.expectError && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
-			
+
 			// Verify directories were created
 			if !tt.expectError {
 				logsDir := filepath.Join(tt.projectRoot, ".spcstr", "logs")
 				sessionsDir := filepath.Join(tt.projectRoot, ".spcstr", "sessions")
-				
+
 				if !dirExists(logsDir) {
 					t.Errorf("logs directory not created: %s", logsDir)
 				}
@@ -78,45 +78,45 @@ func TestConfigureClaudeHooks(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			projectRoot := t.TempDir()
 			ctx := context.Background()
-			
+
 			// Create existing settings if specified
 			if tt.existingSettings != nil {
 				claudeDir := filepath.Join(projectRoot, ".claude")
 				os.MkdirAll(claudeDir, 0755)
-				
+
 				settingsPath := filepath.Join(claudeDir, "settings.json")
 				data, _ := json.MarshalIndent(tt.existingSettings, "", "  ")
 				os.WriteFile(settingsPath, data, 0644)
 			}
-			
+
 			err := configureClaudeHooks(ctx, projectRoot)
-			
+
 			if tt.expectError && err == nil {
 				t.Error("expected error but got none")
 			}
 			if !tt.expectError && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
-			
+
 			// Verify settings file was created and has correct hooks
 			if !tt.expectError {
 				settingsPath := filepath.Join(projectRoot, ".claude", "settings.json")
-				
+
 				data, err := os.ReadFile(settingsPath)
 				if err != nil {
 					t.Fatalf("failed to read settings.json: %v", err)
 				}
-				
+
 				var settings map[string]interface{}
 				if err := json.Unmarshal(data, &settings); err != nil {
 					t.Fatalf("failed to parse settings.json: %v", err)
 				}
-				
+
 				hooks, ok := settings["hooks"].(map[string]interface{})
 				if !ok {
 					t.Fatal("hooks not found in settings or wrong type")
 				}
-				
+
 				// Check for PascalCase event names and proper structure
 				expectedHooks := map[string]string{
 					"SessionStart":     "session_start",
@@ -129,47 +129,47 @@ func TestConfigureClaudeHooks(t *testing.T) {
 					"Stop":             "stop",
 					"SubagentStop":     "subagent_stop",
 				}
-				
+
 				for eventName, commandName := range expectedHooks {
 					hookArray, exists := hooks[eventName]
 					if !exists {
 						t.Errorf("event %s not found in settings", eventName)
 						continue
 					}
-					
+
 					// Verify it's an array
 					arr, ok := hookArray.([]interface{})
 					if !ok || len(arr) == 0 {
 						t.Errorf("event %s is not an array or is empty", eventName)
 						continue
 					}
-					
+
 					// Check first element structure
 					firstConfig, ok := arr[0].(map[string]interface{})
 					if !ok {
 						t.Errorf("event %s first element is not a map", eventName)
 						continue
 					}
-					
+
 					// Check for hooks array
 					hooksArr, ok := firstConfig["hooks"].([]interface{})
 					if !ok || len(hooksArr) == 0 {
 						t.Errorf("event %s does not have hooks array", eventName)
 						continue
 					}
-					
+
 					// Check first hook structure
 					firstHook, ok := hooksArr[0].(map[string]interface{})
 					if !ok {
 						t.Errorf("event %s first hook is not a map", eventName)
 						continue
 					}
-					
+
 					// Verify type and command fields
 					if hookType, ok := firstHook["type"].(string); !ok || hookType != "command" {
 						t.Errorf("event %s hook does not have type 'command'", eventName)
 					}
-					
+
 					if command, ok := firstHook["command"].(string); !ok {
 						t.Errorf("event %s hook does not have command field", eventName)
 					} else {
@@ -178,7 +178,7 @@ func TestConfigureClaudeHooks(t *testing.T) {
 							t.Errorf("event %s command mismatch: got %q, want %q", eventName, command, expectedCmd)
 						}
 					}
-					
+
 					// Check matcher field for events that need it
 					needsMatcher := []string{"PreToolUse", "PostToolUse", "PreCompact"}
 					for _, name := range needsMatcher {
@@ -189,7 +189,7 @@ func TestConfigureClaudeHooks(t *testing.T) {
 						}
 					}
 				}
-				
+
 				// Check that existing data is preserved
 				if tt.existingSettings != nil {
 					for key := range tt.existingSettings {
@@ -235,28 +235,28 @@ func TestWriteSettingsAtomic(t *testing.T) {
 			tempDir := t.TempDir()
 			settingsPath := filepath.Join(tempDir, "settings.json")
 			ctx := context.Background()
-			
+
 			err := writeSettingsAtomic(ctx, settingsPath, tt.settings)
-			
+
 			if tt.expectError && err == nil {
 				t.Error("expected error but got none")
 			}
 			if !tt.expectError && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
-			
+
 			// Verify file was written correctly
 			if !tt.expectError {
 				data, err := os.ReadFile(settingsPath)
 				if err != nil {
 					t.Fatalf("failed to read written file: %v", err)
 				}
-				
+
 				var readSettings map[string]interface{}
 				if err := json.Unmarshal(data, &readSettings); err != nil {
 					t.Fatalf("failed to parse written file: %v", err)
 				}
-				
+
 				// Simple check - just verify keys match
 				for key := range tt.settings {
 					if _, exists := readSettings[key]; !exists {
@@ -272,7 +272,7 @@ func TestDirExists(t *testing.T) {
 	tempDir := t.TempDir()
 	tempFile := filepath.Join(tempDir, "file.txt")
 	os.WriteFile(tempFile, []byte("test"), 0644)
-	
+
 	tests := []struct {
 		name     string
 		path     string
@@ -309,7 +309,7 @@ func TestFileExists(t *testing.T) {
 	tempDir := t.TempDir()
 	tempFile := filepath.Join(tempDir, "file.txt")
 	os.WriteFile(tempFile, []byte("test"), 0644)
-	
+
 	tests := []struct {
 		name     string
 		path     string
@@ -344,27 +344,27 @@ func TestFileExists(t *testing.T) {
 
 func TestInitializeProject(t *testing.T) {
 	tests := []struct {
-		name          string
-		setupFunc     func(string) error
-		force         bool
-		expectError   bool
-		expectPrompt  bool
+		name         string
+		setupFunc    func(string) error
+		force        bool
+		expectError  bool
+		expectPrompt bool
 	}{
 		{
-			name:          "fresh project initialization",
-			setupFunc:     nil,
-			force:         false,
-			expectError:   false,
-			expectPrompt:  false,
+			name:         "fresh project initialization",
+			setupFunc:    nil,
+			force:        false,
+			expectError:  false,
+			expectPrompt: false,
 		},
 		{
 			name: "existing .spcstr with force flag",
 			setupFunc: func(dir string) error {
 				return os.MkdirAll(filepath.Join(dir, ".spcstr"), 0755)
 			},
-			force:         true,
-			expectError:   false,
-			expectPrompt:  false,
+			force:        true,
+			expectError:  false,
+			expectPrompt: false,
 		},
 	}
 

@@ -43,7 +43,7 @@ func (l *HookLogger) LogEvent(sessionID, hookName string, inputData interface{},
 	}
 
 	logPath := filepath.Join(".spcstr", "logs", fmt.Sprintf("%s.json", hookName))
-	
+
 	// Create logs directory if it doesn't exist
 	if err := os.MkdirAll(filepath.Dir(logPath), 0755); err != nil {
 		return fmt.Errorf("failed to create logs directory: %w", err)
@@ -59,7 +59,7 @@ func (l *HookLogger) appendToLogFile(logPath string, event HookEvent) error {
 
 	// Create temporary file for atomic write
 	tempFile := logPath + ".tmp"
-	
+
 	// Read existing events
 	var existingEvents []HookEvent
 	if data, err := os.ReadFile(logPath); err == nil {

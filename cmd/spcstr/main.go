@@ -6,9 +6,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/spf13/cobra"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/dylan/spcstr/internal/config"
 	"github.com/dylan/spcstr/internal/hooks"
+	"github.com/dylan/spcstr/internal/tui"
+	"github.com/spf13/cobra"
 )
 
 // Build variables set via ldflags
@@ -30,11 +32,16 @@ var rootCmd = &cobra.Command{
 	Short:   "spcstr - a CLI/TUI tool for Claude Code session observability",
 	Long:    `spcstr provides real-time observability for Claude Code sessions through hook integration and an interactive terminal interface.`,
 	Version: Version,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// When no subcommands are provided, launch TUI
-		// TODO: Launch TUI application once internal/tui/app is implemented
-		fmt.Printf("spcstr v%s\n", Version)
-		fmt.Println("TUI mode will be available soon. Use 'spcstr --help' for available commands.")
+		m := tui.NewModel()
+		p := tea.NewProgram(m, tea.WithAltScreen())
+
+		if _, err := p.Run(); err != nil {
+			return fmt.Errorf("error running TUI: %w", err)
+		}
+
+		return nil
 	},
 }
 
@@ -65,7 +72,7 @@ var hookCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		hookName := args[0]
-		
+
 		// Get working directory from flag
 		cwdFlag, _ := cmd.Flags().GetString("cwd")
 		workingDir := cwdFlag
@@ -76,26 +83,26 @@ var hookCmd = &cobra.Command{
 				return fmt.Errorf("failed to get working directory: %w", err)
 			}
 		}
-		
+
 		// Convert to absolute path
 		absPath, err := filepath.Abs(workingDir)
 		if err != nil {
 			return fmt.Errorf("failed to resolve absolute path: %w", err)
 		}
-		
+
 		// Read JSON input from stdin
 		input, err := io.ReadAll(os.Stdin)
 		if err != nil {
 			return fmt.Errorf("failed to read stdin: %w", err)
 		}
-		
+
 		// Execute the hook
 		err = hooks.ExecuteHook(hookName, absPath, input)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Hook execution failed: %v\n", err)
 			os.Exit(2) // Block operation exit code
 		}
-		
+
 		return nil
 	},
 }
@@ -103,10 +110,10 @@ var hookCmd = &cobra.Command{
 func init() {
 	// Init command flags
 	initCmd.Flags().BoolP("force", "f", false, "Force reinitialization without prompting")
-	
+
 	// Hook command flags
 	hookCmd.Flags().StringP("cwd", "c", "", "Working directory for hook execution (project root)")
-	
+
 	// Add commands to root
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(initCmd)

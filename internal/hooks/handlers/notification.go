@@ -70,7 +70,7 @@ func (h *NotificationHandler) Execute(input []byte) error {
 	if err != nil {
 		return fmt.Errorf("failed to get working directory: %w", err)
 	}
-	
+
 	stateManager := state.NewStateManager(filepath.Join(cwd, ".spcstr"))
 
 	// Add notification to session state using UpdateState
@@ -83,7 +83,7 @@ func (h *NotificationHandler) Execute(input []byte) error {
 			Message:   params.Message,
 			Level:     level,
 		}
-		
+
 		sessionState.Notifications = append(sessionState.Notifications, newNotification)
 		return nil
 	})

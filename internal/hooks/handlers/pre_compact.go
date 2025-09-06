@@ -37,6 +37,6 @@ func (h *PreCompactHandler) Execute(input []byte) error {
 
 	// This hook is mainly for observability, no state changes required
 	// Could be used for compaction metrics in the future
-	
+
 	return nil
 }

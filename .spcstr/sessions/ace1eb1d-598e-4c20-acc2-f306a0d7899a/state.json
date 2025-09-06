@@ -1,0 +1,48 @@
+{
+  "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+  "created_at": "2025-09-06T03:12:38.061487Z",
+  "updated_at": "2025-09-06T03:17:35.993771Z",
+  "session_active": false,
+  "agents": [],
+  "agents_history": [],
+  "files": {
+    "new": [],
+    "edited": [],
+    "read": []
+  },
+  "tools_used": {
+    "Bash": 8,
+    "Glob": 1,
+    "Grep": 2,
+    "Read": 7
+  },
+  "errors": [],
+  "prompts": [
+    {
+      "timestamp": "2025-09-05T23:12:43.793184-04:00",
+      "prompt": "/BMad:agents:sm ",
+      "response": "",
+      "tools_used": []
+    },
+    {
+      "timestamp": "2025-09-05T23:14:31.812248-04:00",
+      "prompt": "/BMad:agents:sm ",
+      "response": "",
+      "tools_used": []
+    },
+    {
+      "timestamp": "2025-09-05T23:16:06.188563-04:00",
+      "prompt": "Hey Bob -- Just hearrd from James that 1.5 should be good to go. I gave it a quick review and it looks good from a product perspective. Run through all ACs and give it your 👍 ",
+      "response": "",
+      "tools_used": []
+    }
+  ],
+  "notifications": [
+    {
+      "timestamp": "2025-09-05T23:17:35.993226-04:00",
+      "type": "hook",
+      "message": "Claude is waiting for your input",
+      "level": "info"
+    }
+  ]
+}

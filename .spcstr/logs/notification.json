@@ -1,0 +1,93 @@
+[
+  {
+    "timestamp": "2025-09-05T22:11:12.276299-04:00",
+    "session_id": "3faf0f9b-01fa-4535-85e1-23d9623aa1c9",
+    "hook_name": "notification",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "Notification",
+      "message": "Claude is waiting for your input",
+      "session_id": "3faf0f9b-01fa-4535-85e1-23d9623aa1c9",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/3faf0f9b-01fa-4535-85e1-23d9623aa1c9.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T22:23:37.646499-04:00",
+    "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+    "hook_name": "notification",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "Notification",
+      "message": "Claude is waiting for your input",
+      "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/3ef7f904-7316-4b70-881c-5d2ed8459bbc.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T22:26:13.165171-04:00",
+    "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+    "hook_name": "notification",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "Notification",
+      "message": "Claude is waiting for your input",
+      "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/3ef7f904-7316-4b70-881c-5d2ed8459bbc.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T22:31:25.28095-04:00",
+    "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+    "hook_name": "notification",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "Notification",
+      "message": "Claude is waiting for your input",
+      "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/3ef7f904-7316-4b70-881c-5d2ed8459bbc.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T22:38:52.156269-04:00",
+    "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+    "hook_name": "notification",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "Notification",
+      "message": "Claude is waiting for your input",
+      "session_id": "3ef7f904-7316-4b70-881c-5d2ed8459bbc",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/3ef7f904-7316-4b70-881c-5d2ed8459bbc.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T22:53:14.92038-04:00",
+    "session_id": "a82020b5-801e-492b-bbff-d82ae3fcd1a1",
+    "hook_name": "notification",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "Notification",
+      "message": "Claude is waiting for your input",
+      "session_id": "a82020b5-801e-492b-bbff-d82ae3fcd1a1",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/a82020b5-801e-492b-bbff-d82ae3fcd1a1.jsonl"
+    },
+    "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:17:35.994836-04:00",
+    "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+    "hook_name": "notification",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "Notification",
+      "message": "Claude is waiting for your input",
+      "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/ace1eb1d-598e-4c20-acc2-f306a0d7899a.jsonl"
+    },
+    "success": true
+  }
+]

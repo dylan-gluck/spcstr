@@ -50,7 +50,7 @@ func (h *PreToolUseHandler) Execute(input []byte) error {
 	if err != nil {
 		return fmt.Errorf("failed to get working directory: %w", err)
 	}
-	
+
 	stateManager := state.NewStateManager(filepath.Join(cwd, ".spcstr"))
 
 	ctx := context.Background()

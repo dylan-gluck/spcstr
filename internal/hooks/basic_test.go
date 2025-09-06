@@ -16,12 +16,12 @@ func TestBasicHookExecution(t *testing.T) {
 	spcstrDir := filepath.Join(projectDir, ".spcstr")
 	sessionsDir := filepath.Join(spcstrDir, "sessions")
 	logsDir := filepath.Join(spcstrDir, "logs")
-	
+
 	err := os.MkdirAll(sessionsDir, 0755)
 	if err != nil {
 		t.Fatalf("Failed to create sessions directory: %v", err)
 	}
-	
+
 	err = os.MkdirAll(logsDir, 0755)
 	if err != nil {
 		t.Fatalf("Failed to create logs directory: %v", err)
@@ -31,30 +31,30 @@ func TestBasicHookExecution(t *testing.T) {
 	InitializeHandlers()
 
 	sessionID := "basic_test_session"
-	
+
 	// Test session_start
 	t.Run("session_start_basic", func(t *testing.T) {
 		input := `{
 			"session_id": "` + sessionID + `",
 			"source": "basic_test"
 		}`
-		
+
 		err := ExecuteHook("session_start", projectDir, []byte(input))
 		if err != nil {
 			t.Fatalf("session_start hook failed: %v", err)
 		}
-		
+
 		// Verify session state was created
 		statePath := filepath.Join(projectDir, ".spcstr", "sessions", sessionID, "state.json")
 		if _, err := os.Stat(statePath); os.IsNotExist(err) {
 			t.Error("Session state file was not created")
 		}
-		
+
 		// Verify we can load the state
 		oldDir, _ := os.Getwd()
 		os.Chdir(projectDir)
 		defer os.Chdir(oldDir)
-		
+
 		manager := state.NewStateManager(".spcstr")
 		sessionState, err := manager.LoadState(context.Background(), sessionID)
 		if err != nil {
@@ -74,17 +74,17 @@ func TestBasicHookExecution(t *testing.T) {
 		input := `{
 			"session_id": "` + sessionID + `"
 		}`
-		
+
 		err := ExecuteHook("session_end", projectDir, []byte(input))
 		if err != nil {
 			t.Fatalf("session_end hook failed: %v", err)
 		}
-		
+
 		// Verify session is now inactive
 		oldDir, _ := os.Getwd()
 		os.Chdir(projectDir)
 		defer os.Chdir(oldDir)
-		
+
 		manager := state.NewStateManager(".spcstr")
 		sessionState, err := manager.LoadState(context.Background(), sessionID)
 		if err != nil {
@@ -117,7 +117,7 @@ func TestHookRegistry(t *testing.T) {
 	expectedHooks := []string{
 		"session_start",
 		"user_prompt_submit",
-		"pre_tool_use", 
+		"pre_tool_use",
 		"post_tool_use",
 		"notification",
 		"pre_compact",
@@ -133,7 +133,7 @@ func TestHookRegistry(t *testing.T) {
 				t.Errorf("Hook '%s' is not registered", hookName)
 				return
 			}
-			
+
 			if handler.Name() != hookName {
 				t.Errorf("Handler name mismatch: expected '%s', got '%s'", hookName, handler.Name())
 			}

@@ -28,7 +28,7 @@ func InitializeProject(force bool) error {
 	spcstrDir := filepath.Join(projectRoot, ".spcstr")
 	if dirExists(spcstrDir) && !force {
 		fmt.Printf("Directory .spcstr already exists in %s\n", projectRoot)
-		
+
 		// Prompt for confirmation
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Do you want to reinitialize? This will preserve existing data. (y/N): ")
@@ -36,7 +36,7 @@ func InitializeProject(force bool) error {
 		if err != nil {
 			return fmt.Errorf("failed to read user input: %w", err)
 		}
-		
+
 		response = strings.TrimSpace(strings.ToLower(response))
 		if response != "y" && response != "yes" {
 			fmt.Println("Initialization cancelled.")
@@ -58,7 +58,7 @@ func InitializeProject(force bool) error {
 	fmt.Println("✓ Created .spcstr/logs and .spcstr/sessions directories")
 	fmt.Println("✓ Configured Claude Code hooks in .claude/settings.json")
 	fmt.Println("\nYour project is now ready for Claude Code session tracking!")
-	
+
 	return nil
 }
 
@@ -102,7 +102,7 @@ func configureClaudeHooks(ctx context.Context, projectRoot string) error {
 	}
 
 	settingsPath := filepath.Join(claudeDir, "settings.json")
-	
+
 	// Read existing settings if file exists
 	var settings map[string]interface{}
 	if fileExists(settingsPath) {
@@ -110,14 +110,14 @@ func configureClaudeHooks(ctx context.Context, projectRoot string) error {
 		if err != nil {
 			return fmt.Errorf("failed to read existing settings.json: %w", err)
 		}
-		
+
 		if len(data) > 0 {
 			if err := json.Unmarshal(data, &settings); err != nil {
 				return fmt.Errorf("failed to parse existing settings.json: %w", err)
 			}
 		}
 	}
-	
+
 	if settings == nil {
 		settings = make(map[string]interface{})
 	}
@@ -252,7 +252,7 @@ func writeSettingsAtomic(ctx context.Context, path string, settings map[string]i
 		return fmt.Errorf("failed to create temp file: %w", err)
 	}
 	tempPath := tempFile.Name()
-	
+
 	// Ensure cleanup
 	defer func() {
 		tempFile.Close()
@@ -263,7 +263,7 @@ func writeSettingsAtomic(ctx context.Context, path string, settings map[string]i
 	if _, err := tempFile.Write(data); err != nil {
 		return fmt.Errorf("failed to write to temp file: %w", err)
 	}
-	
+
 	// Add newline at end of file
 	if _, err := tempFile.Write([]byte("\n")); err != nil {
 		return fmt.Errorf("failed to write newline: %w", err)
@@ -273,7 +273,7 @@ func writeSettingsAtomic(ctx context.Context, path string, settings map[string]i
 	if err := tempFile.Sync(); err != nil {
 		return fmt.Errorf("failed to sync temp file: %w", err)
 	}
-	
+
 	// Close temp file before rename
 	if err := tempFile.Close(); err != nil {
 		return fmt.Errorf("failed to close temp file: %w", err)

@@ -56,7 +56,7 @@ func (r *HookRegistry) GetHandler(name string) (HookHandler, bool) {
 func (r *HookRegistry) ListHooks() []string {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
+
 	hooks := make([]string, 0, len(r.handlers))
 	for name := range r.handlers {
 		hooks = append(hooks, name)

@@ -49,7 +49,7 @@ func (h *SessionStartHandler) Execute(input []byte) error {
 	if err != nil {
 		return fmt.Errorf("failed to get working directory: %w", err)
 	}
-	
+
 	stateManager := state.NewStateManager(filepath.Join(cwd, ".spcstr"))
 
 	// Initialize state using StateManager

@@ -63,7 +63,7 @@ func (h *UserPromptSubmitHandler) Execute(input []byte) error {
 	if err != nil {
 		return fmt.Errorf("failed to get working directory: %w", err)
 	}
-	
+
 	stateManager := state.NewStateManager(filepath.Join(cwd, ".spcstr"))
 
 	// Add prompt to session state using UpdateState
@@ -76,7 +76,7 @@ func (h *UserPromptSubmitHandler) Execute(input []byte) error {
 			Response:  "", // Will be filled by response hooks if needed
 			ToolsUsed: []string{},
 		}
-		
+
 		sessionState.Prompts = append(sessionState.Prompts, newPrompt)
 		return nil
 	})

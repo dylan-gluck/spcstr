@@ -45,7 +45,7 @@ func (h *StopHandler) Execute(input []byte) error {
 	if err != nil {
 		return fmt.Errorf("failed to get working directory: %w", err)
 	}
-	
+
 	stateManager := state.NewStateManager(filepath.Join(cwd, ".spcstr"))
 
 	// Set session as inactive

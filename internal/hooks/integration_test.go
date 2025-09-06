@@ -16,12 +16,12 @@ func TestHookWorkflowIntegration(t *testing.T) {
 	spcstrDir := filepath.Join(projectDir, ".spcstr")
 	sessionsDir := filepath.Join(spcstrDir, "sessions")
 	logsDir := filepath.Join(spcstrDir, "logs")
-	
+
 	err := os.MkdirAll(sessionsDir, 0755)
 	if err != nil {
 		t.Fatalf("Failed to create sessions directory: %v", err)
 	}
-	
+
 	err = os.MkdirAll(logsDir, 0755)
 	if err != nil {
 		t.Fatalf("Failed to create logs directory: %v", err)
@@ -31,19 +31,19 @@ func TestHookWorkflowIntegration(t *testing.T) {
 	InitializeHandlers()
 
 	sessionID := "integration_test_session"
-	
+
 	// Test 1: Session Start
 	t.Run("session_start", func(t *testing.T) {
 		input := `{
 			"session_id": "` + sessionID + `",
 			"source": "integration_test"
 		}`
-		
+
 		err := ExecuteHook("session_start", projectDir, []byte(input))
 		if err != nil {
 			t.Fatalf("session_start hook failed: %v", err)
 		}
-		
+
 		// Verify session state was created
 		statePath := filepath.Join(projectDir, ".spcstr", "sessions", sessionID, "state.json")
 		if _, err := os.Stat(statePath); os.IsNotExist(err) {
@@ -58,7 +58,7 @@ func TestHookWorkflowIntegration(t *testing.T) {
 			"prompt": "Hello, this is an integration test!",
 			"timestamp": "2023-06-15T14:30:00Z"
 		}`
-		
+
 		err := ExecuteHook("user_prompt_submit", projectDir, []byte(input))
 		if err != nil {
 			t.Fatalf("user_prompt_submit hook failed: %v", err)
@@ -72,7 +72,7 @@ func TestHookWorkflowIntegration(t *testing.T) {
 			"tool_name": "Task",
 			"agent_name": "test_agent"
 		}`
-		
+
 		err := ExecuteHook("pre_tool_use", projectDir, []byte(input))
 		if err != nil {
 			t.Fatalf("pre_tool_use hook failed: %v", err)
@@ -89,7 +89,7 @@ func TestHookWorkflowIntegration(t *testing.T) {
 			"files_edited": ["main.go"],
 			"files_read": ["config.json"]
 		}`
-		
+
 		err := ExecuteHook("post_tool_use", projectDir, []byte(input))
 		if err != nil {
 			t.Fatalf("post_tool_use hook failed: %v", err)
@@ -104,7 +104,7 @@ func TestHookWorkflowIntegration(t *testing.T) {
 			"level": "info",
 			"timestamp": "2023-06-15T14:35:00Z"
 		}`
-		
+
 		err := ExecuteHook("notification", projectDir, []byte(input))
 		if err != nil {
 			t.Fatalf("notification hook failed: %v", err)
@@ -116,7 +116,7 @@ func TestHookWorkflowIntegration(t *testing.T) {
 		input := `{
 			"session_id": "` + sessionID + `"
 		}`
-		
+
 		err := ExecuteHook("session_end", projectDir, []byte(input))
 		if err != nil {
 			t.Fatalf("session_end hook failed: %v", err)
@@ -181,7 +181,7 @@ func TestHookWorkflowIntegration(t *testing.T) {
 	t.Run("verify_log_files", func(t *testing.T) {
 		expectedLogs := []string{
 			"session_start.json",
-			"user_prompt_submit.json", 
+			"user_prompt_submit.json",
 			"pre_tool_use.json",
 			"post_tool_use.json",
 			"notification.json",
@@ -202,7 +202,7 @@ func TestHookCommandRouting(t *testing.T) {
 	expectedHooks := []string{
 		"session_start",
 		"user_prompt_submit",
-		"pre_tool_use", 
+		"pre_tool_use",
 		"post_tool_use",
 		"notification",
 		"pre_compact",
@@ -218,7 +218,7 @@ func TestHookCommandRouting(t *testing.T) {
 				t.Errorf("Hook '%s' is not registered", hookName)
 				return
 			}
-			
+
 			if handler.Name() != hookName {
 				t.Errorf("Handler name mismatch: expected '%s', got '%s'", hookName, handler.Name())
 			}
