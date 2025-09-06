@@ -1,0 +1,86 @@
+[
+  {
+    "timestamp": "2025-09-05T23:18:55.821574-04:00",
+    "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+    "hook_name": "subagent_stop",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SubagentStop",
+      "permission_mode": "bypassPermissions",
+      "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+      "stop_hook_active": false,
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/ace1eb1d-598e-4c20-acc2-f306a0d7899a.jsonl"
+    },
+    "success": false
+  },
+  {
+    "timestamp": "2025-09-05T23:19:04.355868-04:00",
+    "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+    "hook_name": "subagent_stop",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SubagentStop",
+      "permission_mode": "bypassPermissions",
+      "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+      "stop_hook_active": true,
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/ace1eb1d-598e-4c20-acc2-f306a0d7899a.jsonl"
+    },
+    "success": false
+  },
+  {
+    "timestamp": "2025-09-05T23:19:10.71322-04:00",
+    "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+    "hook_name": "subagent_stop",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SubagentStop",
+      "permission_mode": "bypassPermissions",
+      "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+      "stop_hook_active": true,
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/ace1eb1d-598e-4c20-acc2-f306a0d7899a.jsonl"
+    },
+    "success": false
+  },
+  {
+    "timestamp": "2025-09-05T23:19:16.913716-04:00",
+    "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+    "hook_name": "subagent_stop",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SubagentStop",
+      "permission_mode": "bypassPermissions",
+      "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+      "stop_hook_active": true,
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/ace1eb1d-598e-4c20-acc2-f306a0d7899a.jsonl"
+    },
+    "success": false
+  },
+  {
+    "timestamp": "2025-09-05T23:19:38.763548-04:00",
+    "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+    "hook_name": "subagent_stop",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SubagentStop",
+      "permission_mode": "bypassPermissions",
+      "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+      "stop_hook_active": true,
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/ace1eb1d-598e-4c20-acc2-f306a0d7899a.jsonl"
+    },
+    "success": false
+  },
+  {
+    "timestamp": "2025-09-05T23:19:51.450815-04:00",
+    "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+    "hook_name": "subagent_stop",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SubagentStop",
+      "permission_mode": "bypassPermissions",
+      "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+      "stop_hook_active": true,
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/ace1eb1d-598e-4c20-acc2-f306a0d7899a.jsonl"
+    },
+    "success": true
+  }
+]

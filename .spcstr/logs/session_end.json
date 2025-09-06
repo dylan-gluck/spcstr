@@ -50,5 +50,18 @@
       "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/28ecf881-f8a1-4d1b-856e-8dce11d300ea.jsonl"
     },
     "success": true
+  },
+  {
+    "timestamp": "2025-09-05T23:22:27.912758-04:00",
+    "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+    "hook_name": "session_end",
+    "input_data": {
+      "cwd": "/Users/dylan/Workspace/projects/spcstr",
+      "hook_event_name": "SessionEnd",
+      "reason": "prompt_input_exit",
+      "session_id": "ace1eb1d-598e-4c20-acc2-f306a0d7899a",
+      "transcript_path": "/Users/dylan/.claude/projects/-Users-dylan-Workspace-projects-spcstr/ace1eb1d-598e-4c20-acc2-f306a0d7899a.jsonl"
+    },
+    "success": true
   }
 ]

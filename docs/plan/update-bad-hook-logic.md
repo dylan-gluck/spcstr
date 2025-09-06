@@ -1,3 +1,5 @@
+
+
  # Post Tool Use
 
 
@@ -52,3 +54,35 @@
     "success": true
   },
 ```
+
+# Pre Tool Use
+
+
+  meta-commit(Create git commit)
+  ⎿  Running hook PreToolUse:Task...
+  ⎿  Error: Read operation blocked by hook:
+     - [spcstr hook pre_tool_use --cwd="${CLAUDE_PROJECT_DIR}"]:                                                                     Warning: Failed to log hook event: failed to rename temp log
+
+
+# Subagent Stop
+
+Commit: d5b0a30 - fix(hooks): make agent_name optional in
+  subagent_stop handler
+
+  Changes Made:
+
+  - Modified the subagent_stop hook handler to make
+  agent_name parameter optional
+  - Added default value "claude" when the parameter is
+  missing
+  - This prevents errors when Claude Code doesn't provide
+  the agent_name during session termination
+
+  Files Modified:
+
+  - internal/hooks/handlers/subagent_stop.go - Added
+  optional parameter handling
+
+  The fix ensures that session termination won't fail due to
+   missing agent_name parameters, improving the robustness
+  of the hook system integration with Claude Code.
