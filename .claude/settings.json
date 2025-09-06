@@ -1,0 +1,98 @@
+{
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "command": "spcstr hook notification --cwd=\"${CLAUDE_PROJECT_DIR}\"",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "spcstr hook post_tool_use --cwd=\"${CLAUDE_PROJECT_DIR}\"",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "command": "spcstr hook pre_compact --cwd=\"${CLAUDE_PROJECT_DIR}\"",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "spcstr hook pre_tool_use --cwd=\"${CLAUDE_PROJECT_DIR}\"",
+            "type": "command"
+          }
+        ],
+        "matcher": "*"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "command": "spcstr hook session_end --cwd=\"${CLAUDE_PROJECT_DIR}\"",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "spcstr hook session_start --cwd=\"${CLAUDE_PROJECT_DIR}\"",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "spcstr hook stop --cwd=\"${CLAUDE_PROJECT_DIR}\"",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "command": "spcstr hook subagent_stop --cwd=\"${CLAUDE_PROJECT_DIR}\"",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "command": "spcstr hook user_prompt_submit --cwd=\"${CLAUDE_PROJECT_DIR}\"",
+            "type": "command"
+          }
+        ]
+      }
+    ]
+  }
+}
